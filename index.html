@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Homepage - University of Pontybridge</title>
+  <meta charset="utf-8">
+  <meta name="language" content="English">
+  <link rel="stylesheet" href="CSS/style.css">
+  <!--I had initially pasted the code from Google Fonts.
+  I then replaced the vertical bar | with the encode %7C to avoid an error in the W3C validator
+  Solution suggested in https://teamtreehouse.com/community/-w3c-validator-error-with-google-font-link-->
+  <link href="https://fonts.googleapis.com/css?family=Quattrocento%7CQuattrocento+Sans" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Caught in Poverty">
+  <!--favicons created on Adobe Illustrator-->
+
+  <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
+  <script src="//d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+
+</head>
+
+<body>
+  <nav>
+    <div class="menu-left">
+     
+      <a title="Homepage" href="index.html" class="logo">Caught in Poverty</a>
+    </div>
+    <ul>
+      <li><a href="">About</a></li>
+     
+    </ul>
+
+  </nav>
+  <header class="homepage">
+    <!--Background image credit: Free-photos on Pixabay https://pixabay.com/en/neuschwanstein-castle-hillside-1081678/-->
+    <div class="overlay">
+      <div class="intro-text">
+        <h1>Caught in Poverty</h1>
+      </div>
+    </div>
+  </header>
+  <div class="container">
+   
+    <section class="intro" id="intro">
+
+      <article class="intro study">
+          <div class='filterDiv'>
+            <select id = 'housingCosts'>
+                <option value='Quintile distribution of income Before Housing Costs'>Before Housing Costs</option>
+                <option value='Quintile distribution of income After Housing Costs'>After Housing Costs</option>
+            
+            </select>
+            
+            <select id = 'selectEthnicity'>
+            <option value = 'White'>White</option>
+            <option value = 'Black' selected>Black</option>
+            <option value = 'Asian'>Asian</option>
+            <option value = 'Mixed'>Mixed</option>
+            <option value = 'Other'>Other</option>
+            </select>
+           
+            
+            </div>
+            <div class="visContainer">
+                <svg id = 'svgArea' class = 'svgVis'></svg>
+              
+            </div>
+        
+      </article>
+      <article class="intro research">
+        <div class='filterDiv'>
+          <input type="range" min="2011" max="2017" value="2017" class="slider" id="yearRange">
+          
+          </div>
+          <div class="visContainer">
+            <svg id = 'svgBar' class = 'svgVis'></svg>
+         <!--    <div id='barVis' class="visDiv"></div> -->
+        </div>
+      </article>
+    </section>
+    <div class="quotes">
+      
+      <section class="quotes">
+        <div class="quote-caption">
+         
+        </div>
+       
+      </section>
+    </div>
+    <section class="news" id="news">
+    
+      <article class="news left">
+        
+        <div class="caption">
+          </div>
+      </article>
+      <article class="news centre">
+        
+        <div class="caption">
+           </div>
+      </article>
+      <article class="news right">
+       
+        <div class="caption">
+          </div>
+      </article>
+    </section>
+  </div>
+  <footer>
+    <ul>
+      <li><a href="">About</a></li>
+      <li><a title="Stories" href="">Stories</a></li>
+      
+    </ul>
+    <div class="links">
+      <p><a href="index.html">Caught in Poverty</a></p>
+      <div class="social">
+        <!--Aesthetic and realism, not clickable-->
+        <img src="Graphics/facebook.svg" alt="Facebook icon">
+        <!--icon by Pixel perfect on Flaticon https://www.flaticon.com/authors/pixel-perfect-->
+        <img src="Graphics/twitter-black.svg" alt="Twitter icon">
+        <!--icon by Smashicon on Flaticon https://www.flaticon.com/authors/smashicons-->
+        <img src="Graphics/instagram-logo.svg" alt="Instagram icon">
+        <!--icon by Freepik on Flaticon https://www.flaticon.com/authors/freepik-->
+      </div>
+    </div>
+  </footer>
+
+  <script src="new_main.js">
+        
+
+  </script>
+</body>
+
+</html>
