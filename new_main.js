@@ -1,15 +1,52 @@
-let margin = { top: 20, right: 20, bottom: 30, left: 50 };
+ let margin = { top: 20, right: 20, bottom: 30, left: 50 };
 
 var svg_group = d3.selectAll('.svgVis'),
 width = parseInt(svg_group.style('width')),
 height = parseInt(svg_group.style('height'));
+ 
 
-console.log(width);
-console.log(height);
+let stroke = d3.scaleOrdinal(d3.schemeCategory10);
+
 /* let width = window.innerWidth / 2;// Use the window's width 
 let height = window.innerHeight; */
 
+/* 
+  /// new attempt to make stuff responsive
+  var default_width = 960;
+var default_height = 500;
+var default_ratio = default_width / default_height;
 
+// Current (non-responsive) width and height are calcuated from the default, minus the margins
+var margin = {top: 80, right: 180, bottom: 80, left: 180},
+    width = default_width - margin.left - margin.right,
+    height = default_height - margin.top - margin.bottom;
+
+// Determine current size, which determines vars
+function set_vars() {
+  //alert('setting vars')
+  current_width = window.innerWidth;
+  current_height = window.innerHeight;
+
+  current_ratio = current_width / current_height;
+
+  // Check if height is limiting factor
+  if ( current_ratio > default_ratio ){
+    h = current_height;
+    w = h * default_ratio;
+  // Else width is limiting
+  } else {
+    w = current_width;
+    h = w / default_ratio;
+  }
+
+  // Set new width and height based on graph dimensions
+  width = w - margin.left - margin.right;
+  height = h - margin.top - margin.bottom;
+
+};
+
+set_vars();
+ */
 
 
 let categories = ['White', 'Mixed', 'Asian', 'Black', 'Other'];
@@ -41,6 +78,8 @@ let svg
     .attr('height', height);
  */
 
+svg_group
+.call(responsivefy);
 
 width = width - margin.left - margin.right;
 height = height - margin.top - margin.bottom;
@@ -263,6 +302,13 @@ function filterDate(data) {
 }
 
 
+function filterHCosts(data) {
+    let housing_costs = document.getElementById('poverty_hc').value;
+    let new_data = data.filter(function (d) { return d.housing_costs == housing_costs});
+    return new_data;
+}
+
+
 function filterEthnicity(data) {
     let selector = document.getElementById('selectEthnicity');
     let ethnicity = selector.options[selector.selectedIndex].value;
@@ -378,4 +424,238 @@ areas.enter()
          .attr('class', 'area')
          .attr('d', area)
          .style('fill', function (d) { return colors(d.key) }) */
+}
+
+
+function responsivefy(svg) {
+    // get container + svg aspect ratio
+    var container = d3.select(svg.node().parentNode),
+        width = parseInt(svg.style("width")),
+        height = parseInt(svg.style("height")),
+        aspect = width / height;
+
+    // add viewBox and preserveAspectRatio properties,
+    // and call resize so that svg resizes on inital page load
+    svg.attr("viewBox", "0 0 " + width + " " + height)
+        .attr("preserveAspectRatio", "xMinYMid")
+        .call(resize);
+
+    // to register multiple listeners for same event type,
+    // you need to add namespace, i.e., 'click.foo'
+    // necessary if you call invoke this function for multiple svgs
+    // api docs: https://github.com/mbostock/d3/wiki/Selections#on
+    d3.select(window).on("resize." + container.attr("id"), resize);
+
+    // get width of container and resize svg to fit it
+    function resize() {
+        var targetWidth = parseInt(container.style("width"));
+        svg.attr("width", targetWidth);
+        svg.attr("height", Math.round(targetWidth / aspect));
+    }
+  }
+
+
+
+
+function lineChart () {
+    d3.csv('poverty_all.csv', function(data) {
+        data.forEach(function (d) {
+            d.year = formatYear(d.year);
+    })
+
+    console.log(data);
+
+
+    categories = ['child', 'overall'];
+
+
+ 
+
+    let filteredData = filterHCosts(data);
+    let svg = d3.select('#poverty_overtime')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .attr('id', 'rel_p_svg')
+    .attr('class', 'svgVis')
+    .call(responsivefy);
+
+   let group = svg
+    .append('g')
+    .attr('class', 'chartG')
+    .attr('width', width)
+.attr('height', height)
+.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+let maxVal = d3.max(filteredData, function (d) {
+    var vals = d3.keys(d).map(function (key) { return key !== 'year' ? d[key] : 0 });
+    return d3.sum(vals);
+});
+
+
+let xScale = d3.scaleTime()
+    .range([0, width])
+    .domain(d3.extent(data, function (d) {
+        return d.year;
+    }))
+
+let yScale = d3.scaleLinear()
+.range([height, 0])
+.domain([0, maxVal]);
+
+console.log(maxVal)
+
+
+
+
+
+  
+
+let xAxis = d3.axisBottom(xScale);
+
+
+let yAxis = d3.axisLeft(yScale);
+
+
+let nestedData = d3.nest()
+.key(function (d) { return d.area})
+.key(function (d) { return d.type})
+.entries(filteredData);
+
+console.log(nestedData);
+
+
+
+    var line = d3.line()
+    .x(function (d) { return xScale(d.year)})
+    .y(function (d) { return yScale(+d.rel_poverty)});
+
+
+let lineGroups = svg.selectAll('.lineGroup')
+.data(nestedData)
+.enter()
+.append('g')
+.classed('lineGroup', true)
+.attr('stroke', function (d) {
+    return stroke(d.key);
+})
+
+
+let lines = lineGroups.selectAll('.line')
+.data(function (d) {
+    return d.values
+})
+.enter()
+.append('path');
+
+lines
+.attr('class', 'line')
+.attr('d', function (d) {
+    return line(d.values);
+})
+.attr('fill', 'none')
+.style("stroke-dasharray", function(d){ 
+    return (d.key == 'overall') ? ("3, 3") : ("0, 0")});
+
+/* for (i in categories) {
+    console.log(i);
+    var lineFunction = multiLine(categories[i]);
+    group.append('path')
+    .datum(nestedData)
+    .attr('class', 'line')
+    .style('stroke', colour(i))
+    .attr('d', lineFunction);
+}
+ */
+
+
+group
+.append('g')
+.classed('x axis', true)
+.attr('transform', 'translate(0,' + height + ')')
+.call(xAxis);
+
+
+group
+.append('g')
+    .classed('y axis', true)
+    .call(yAxis);
+
+document.getElementById('poverty_hc').addEventListener('change', function() {
+    return updateRelP(data, xScale, yScale);
+})
+
+})
+
+
+
+
+}
+
+lineChart();
+
+const updateRelP = function(data, xScale, yScale) {
+    let filteredData = filterHCosts(data);
+
+    xScale
+    .domain(d3.extent(filteredData, function (d) {
+        return d.year;
+    }))
+
+    let maxVal = d3.max(filteredData, function (d) {
+        var vals = d3.keys(d).map(function (key) { return key !== 'year' ? d[key] : 0 });
+        return d3.sum(vals);
+    });
+
+
+    yScale
+    .domain([0, maxVal]);
+
+
+
+
+    let nestedData = d3.nest()
+.key(function (d) { return d.area})
+.key(function (d) { return d.type})
+.entries(filteredData);
+
+
+
+
+
+    var line = d3.line()
+    .x(function (d) { return xScale(d.year)})
+    .y(function (d) { return yScale(+d.rel_poverty)});
+
+
+let lineGroups = d3.select('#rel_p_svg').selectAll('.lineGroup')
+.data(nestedData);
+
+
+
+
+lineGroups.selectAll("path.line")
+.data(function(d){
+   return (d.values);
+ })
+ .transition()
+ .duration(1000)
+   .attr("d", function(d){
+       console.log(d.values);
+     return line(d.values)
+   })
+
+
+/* 
+lines
+.attr('class', 'line')
+.transition()
+.attr('d', function (d) {
+    return line(d.values);
+})
+.attr('fill', 'none')
+.style("stroke-dasharray", function(d){ 
+    return (d.key == 'overall') ? ("3, 3") : ("0, 0")});
+ */
+
 }
