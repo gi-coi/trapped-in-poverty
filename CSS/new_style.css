@@ -114,7 +114,7 @@ ul {
   nav {
     display: flex;
     background-color: #17212b;
-    border-bottom: 5px solid #00655E;
+    border-bottom: 5px solid #80264A;
     justify-content: space-between;
   /*   width: 90vw; */
     min-height: 1vh;
@@ -508,20 +508,38 @@ ul {
   
     header {
       height: 60vh;
-      justify-content: center;
+      justify-content: space-around;
       align-items: center;
     }
   
     /*text on header, readable thanks to the overlay*/
   
     .intro-text {
-      display: block;
+      display: flex;
+      align-items: center;
+    
       text-shadow: -7px 5px 5px #000;
+      width: 50%;
+      height: 100%;
     }
-  
-    .intro-text p {
+
+    
+
+    .title-header {
+      background-color: black;
+    }
+
+    .menu-header {
+      background-color: #9F466A;
+      padding-left: 3em;
+    }
+    
+    .intro-text li {
       color: #FDF9FB;
       font-size: 1.3em;
+      display:block;
+      line-height: 3em;
+      font-family: 'Montserrat';
     }
   
     .title {

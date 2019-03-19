@@ -5,17 +5,19 @@
   <title>Homepage - University of Pontybridge</title>
   <meta charset="utf-8">
   <meta name="language" content="English">
-  <link rel="stylesheet" href="CSS/new_style.css">
+  <link rel="stylesheet" href="CSS/ciessesse.css">
   <!--I had initially pasted the code from Google Fonts.
   I then replaced the vertical bar | with the encode %7C to avoid an error in the W3C validator
   Solution suggested in https://teamtreehouse.com/community/-w3c-validator-error-with-google-font-link-->
-  <link href="https://fonts.googleapis.com/css?family=Quattrocento%7CQuattrocento+Sans" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville%7CMontserrat" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Caught in Poverty">
   <!--favicons created on Adobe Illustrator-->
 
   <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
   <script src="//d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+  <script src="d3.legend.js"></script>
 
 </head>
 <body>
@@ -32,57 +34,24 @@
     </nav>
     <header class="homepage">
       <!--Background image credit: Free-photos on Pixabay https://pixabay.com/en/neuschwanstein-castle-hillside-1081678/-->
-      <div class="overlay">
-        <div class="intro-text">
+ 
+        <div class="intro-text title-header">
           <h1>Caught in Poverty</h1>
         </div>
-      </div>
+        <div class="intro-text menu-header">
+          <ul>
+            <li>Housing</li>
+            <li>Poverty</li>
+            <li>Skills</li>
+          </ul>
+     
+        </div>
+ 
     </header>
     <div class="container">
-   <section class='block' id = 'poverty_eth'>
-
-        <article class="vis">
-            <div class='filterDiv'>
-                <select id = 'housingCosts'>
-                    <option value='Quintile distribution of income Before Housing Costs'>Before Housing Costs</option>
-                    <option value='Quintile distribution of income After Housing Costs'>After Housing Costs</option>
-                
-                </select>
-                
-                <select id = 'selectEthnicity'>
-                <option value = 'White'>White</option>
-                <option value = 'Black' selected>Black</option>
-                <option value = 'Asian'>Asian</option>
-                <option value = 'Mixed'>Mixed</option>
-                <option value = 'Other'>Other</option>
-                </select>
-               
-                
-                </div>
-                <div class="visContainer">
-                    <svg id = 'svgArea' class = 'svgVis'></svg>
-                  
-                </div>
-            
-
-        </article>
-        <article class="vis">
-            <div class='filterDiv'>
-                <input type="range" min="2011" max="2017" value="2017" class="slider" id="yearRange">
-                
-                </div>
-                <div class="visContainer">
-                  <svg id = 'svgBar' class = 'svgVis'></svg>
-               <!--    <div id='barVis' class="visDiv"></div> -->
-              </div>
-
-        </article>
-
-
-    
-   </section>
+  
    <section class='block' id ="poverty_time">
- 
+ <h1>Poverty: how does Wales fare?</h1>
         <article class="vis">
             <div class='filterDiv'>
               <select id = 'poverty_hc'>
@@ -114,6 +83,50 @@
         </article>
 
     
+   </section>
+
+   <section class='block' id='income_ineq'>
+       <article class='vis'>
+            <div class='filterDiv'>
+                    <select id = 'housingCosts'>
+                        <option value='Quintile distribution of income Before Housing Costs'>Before Housing Costs</option>
+                        <option value='Quintile distribution of income After Housing Costs'>After Housing Costs</option>
+                    
+                    </select>
+                    
+                    <select id = 'selectEthnicity'>
+                    <option value = 'White'>White</option>
+                    <option value = 'Black' selected>Black</option>
+                    <option value = 'Asian'>Asian</option>
+                    <option value = 'Mixed'>Mixed</option>
+                    <option value = 'Other'>Other</option>
+                    </select>
+                   
+                    
+                    </div>
+                    <div class="visContainer inequalityDiv" id='area_ineq'>
+                                           
+                    </div>
+       </article>
+       <article class="vis">
+            <div class='filterDiv'>
+
+                    <div class="slider">
+                            <span class="startyear">2011</span>
+                            <div class="range">
+                                <input type="range" name="date" id="yearRange" min="2011" max="2017" step="1" value="2017">
+                                <span class="setyear">2017</span>
+                            </div>
+                            <span class="endyear">2017</span>
+                        </div>
+       <!--          <input type="range" min="2011" max="2017" value="2017" class="slider" id="yearRange"> -->
+                
+                </div>
+                <div class="visContainer inequalityDiv" id="bar_ineq">
+            
+              </div>
+
+        </article>
    </section>
 
        <!--  <section class="intro" id="intro">
@@ -175,7 +188,7 @@
             </div>
           </footer>
         
-          <script src="new_main.js">
+          <script src="other.js">
                 
         
           </script>
