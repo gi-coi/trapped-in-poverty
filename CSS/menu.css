@@ -2,6 +2,17 @@ body {
     color: #777;
 }
 
+
+body * {
+    letter-spacing: initial;
+}
+
+
+.interlude {
+    padding: 3em 0;
+    line-height: 3em;
+}
+
 .pure-img-responsive {
     max-width: 100%;
     height: auto;

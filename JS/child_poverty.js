@@ -1,4 +1,6 @@
-        // basic dimensions
+       (function () {
+       
+       // basic dimensions
         var width = 900;
         var height = 600;
         var margin = { top: 30, right: 30, bottom: 30, left: 30 };
@@ -18,19 +20,19 @@
                 return yScale(d.value);
             });
 
+       // voronoi   
+       var voronoi = d3.voronoi()
+       .x(function (d) {
+           return xScale(d.year)
+       })
+       .y(function (d) {
+           return yScale(d.value)
+       })
+       .extent([
+           [-margin.left, -margin.top],
+           [width - margin.left, height - margin.top]
+       ])
 
-        // voronoi   
-        var voronoi = d3.voronoi()
-            .x(function (d) {
-                return xScale(d.year)
-            })
-            .y(function (d) {
-                return yScale(d.value)
-            })
-            .extent([
-                [-margin.left, -margin.top],
-                [width - margin.left, height - margin.top]
-            ])
 
 
 
@@ -153,13 +155,16 @@
                     .call(d3.axisLeft(yScale));
 
                 // event listener to toggle housing costs
-                document.getElementById("housing_costs").addEventListener("change", function () {
-                    return update(poverty_data);
+                document.getElementById("housing_costs_child").addEventListener("change", function () {
+                    var filteredData = filterData(poverty_data);
+                    return update(filteredData);
                 });
 
 
-                document.getElementById('poverty_type').addEventListener('change', function () {
-                    return update(poverty_data);
+                document.getElementById('poverty_type_child').addEventListener('change', function () {
+                    var filteredData = filterData(poverty_data);
+                   
+                    return update(filteredData);
                 })
 
 
@@ -204,7 +209,7 @@
                     .attr('id', 'resetButton')
                     .attr('class', 'styled-button')
                     .attr('value', 'Reset')
-                    .text('Reset');
+                    .text('Back to line chart');
 
 
                 document.getElementById('resetButton').addEventListener('click', function () {
@@ -261,23 +266,6 @@
                     return { poverty: poverty, housing: housing, labelX: labelX, labelY: labelY, leaves: leaves }
                 })
                 .entries(filteredData);
-
-
-
-            /* 
-                        nested.forEach(function (n) {
-                            n.poverty = n.values[0].poverty_type;
-                            n.hc = n.values[0].housing_costs;
-                            n.labelY = n.values[n.values.length - 1].value;
-                        }) */
-
-
-
-
-
-
-
-
 
 
 
@@ -356,7 +344,7 @@
 
 
 
-            d3.select("#childVis svg")
+            svg
                 .select(".y.axis")
                 .transition()
                 .duration(1000)
@@ -374,8 +362,12 @@
                 .data(voronoi.polygons(dt));
 
 
-            vr.enter()
-                .append('path')
+            var new_vr = vr
+            .enter()
+            .append('path');
+
+
+            new_vr.merge(vr)
                 .attr('class', 'voronoi')
                 .attr('d', function (d, i) {
                     return d ? 'M' + d.join('L') + 'Z' : null;
@@ -401,19 +393,19 @@
                 }, true);
 
 
-
+            vr.exit().remove();
 
 
 
         }
 
-
+ 
 
         var filterData = function (data) {
 
-            var HCselector = document.getElementById("housing_costs");
+            var HCselector = document.getElementById("housing_costs_child");
             var housing_costs = HCselector.options[HCselector.selectedIndex].value;
-            var Pselector = document.getElementById('poverty_type');
+            var Pselector = document.getElementById('poverty_type_child');
             var poverty_type = Pselector.options[Pselector.selectedIndex].value;
 
             var filteredData = data.filter(function (d) {
@@ -425,20 +417,6 @@
         }
 
 
-
-        // smooth transition function for the paths
-        function transition(path) {
-            path.transition()
-                .duration(2000)
-                .attrTween("stroke-dasharray", tweenDash);
-        }
-        function tweenDash() {
-            var l = this.getTotalLength(),
-                i = d3.interpolateString("0," + l, l + "," + l);
-            return function (t) {
-                return i(t);
-            };
-        }
 
 
 
@@ -546,9 +524,13 @@ console.log(nest)
             var vr = svg2.selectAll('.voronoi')
                 .data(voronoiW.polygons(dt));
 
+  
+            var new_vr = vr
+            .enter()
+            .append('path');
 
-            vr.enter()
-                .append('path')
+
+            new_vr.merge(vr)
                 .attr('class', 'voronoi')
                 .attr('d', function (d, i) {
                     return d ? 'M' + d.join('L') + 'Z' : null;
@@ -574,7 +556,7 @@ console.log(nest)
                 }, true);
 
 
-
+        vr.exit().remove();
 
 
 
@@ -657,6 +639,7 @@ console.log(nest)
 
             })
         }
+    })();
 
 
 
