@@ -87,6 +87,12 @@ svg {
     letter-spacing: initial;
 }
 
+/* ALEKS'S CSS (skills.html)*/
+
+.sankey_chartu,#sankey_chartu, .Compulsory, #Compulsory, .Tertiary,#Tertiary,.alleducation,#alleducation,.cardifffe, #cardifffe {
+    display:none;
+    align-content: center;
+}
 
 
 /*
