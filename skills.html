@@ -1,0 +1,125 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A layout example with a side menu that hides on mobile, just like the Pure website.">
+    <title>Responsive Side Menu &ndash; Layout Examples &ndash; Pure</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+    
+    
+    
+      
+            <link rel="stylesheet" href="CSS/menu.css">
+            <!--<script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>-->
+
+
+    
+</head>
+<body>
+
+<!--https://purecss.io/layouts/side-menu/-->
+
+
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="#">MENU</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item menu-item-divided pure-menu-selected"><a href="index.html" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">The project</a></li>
+
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link">Housing</a>
+                </li>
+
+                <li class="pure-menu-item">
+                    <a href="relative_poverty.html" class="pure-menu-link">Poverty</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="children_poverty.html" class="pure-menu-link">Children</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link">Stories</a>
+                </li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Businesses</a></li>
+                <li class="pure-menu-item"><a href="skills.html" class="pure-menu-link">Skills & Education</a></li>
+            </ul>
+        </div>
+    </div>
+<!--MENU TEMPLATE END HERE (Skills Page Specific adjustments)-->
+    <div id="main">
+        <div class="header">
+            <h1>Skills and Education</h1>
+            <h2><em>A look at Cardiff</em></h2>
+        </div>
+
+        <div class="content">
+            <h2 class="content-subhead">Skills and Education</h2>
+            <p>
+                The <a href="https://www.jrf.org.uk/report/uk-poverty-causes-costs-and-solutions"><em>Joseph Rowntree Foundation</em></a> identifies gaps in education and professional skills as being one of five main contributing factors towards poverty. Theoretically, professional skills empower individuals to increase their value in the labour market. By developing skills, a worker in turn can improve their productivity, allowing a business to produce more and thus extract more profit as a natural result of improved efficiency. The UK however has struggled to develop its productive capacity since the <a href="https://voxeu.org/article/rising-brexit-uncertainty-has-reduced-investment-and-employment">2008</a> Financial crisis, and more recently <a href="https://voxeu.org/article/rising-brexit-uncertainty-has-reduced-investment-and-employment">Brexit</a> have both had significant effects on domestic business investment – the primary driver for developing productivity. The ONS measure for productivity growth GVA (Growth Value Added) has consistently shown <a href="https://www.ons.gov.uk/economy/grossvalueaddedgva/bulletins/regionalgrossvalueaddedbalanceduk/1998to2017#interactive-map-gross-value-added-gva-per-head-for-nuts3-local-areas-1998-to-2017">Wales</a> to be the slowest growing nation in the United Kingdom, with a significant proportion of this GVA developed in the public rather than private <a href="https://neweconomics.org/uploads/files/76fbd0aabdb290c755_qim6bkj2q.pdf">sector </a>(p11). Cardiff exists outside of these statistics  
+<br><br>
+The Welsh productivity issue demonstrates a cruel irony, Wales was one of the first nations in the world to industrialise, yet the contemporary Welsh economy is stymied with features more common to a deindustrialised economy. Namely, Low Activity <a href="https://www.bbc.co.uk/news/uk-wales-46522457">rates</a>, weak skill competancy, and a lack of <a href="https://www.jrf.org.uk/data/poverty-levels-and-trends-england-wales-scotland-and-northern-ireland">oppertunities.</a> The mining closures of the 80s initiated a continuous sad trend for the Welsh economy. Sequential governments determined that the lack of an industrial strategy would encourage growth - market forces would favour certain industries, in turn increasing production which would drive up demand for whatever skills happened to be required to sustain that <a href="https://www.jrf.org.uk/data/poverty-levels-and-trends-england-wales-scotland-and-northern-ireland">growth!</a>  <br><br>
+
+There remains a passive implication that Wales difficulty in adjusting to modern economic <a href="https://www.walesonline.co.uk/business/business-news/welsh-economy-fast-track-growth-8734567">realities</a> is down to an inherent Welsh disdain for intellectual pursuits or being <a href="https://www.bbc.co.uk/news/av/uk-wales-politics-40007095/best-way-out-of-poverty-is-to-get-a-job-says-alun-cairns">"Workshy".</a> This, however, is not a recent problem – Wales has long had to deal with content with conceptions of being <a href="https://www.dailymail.co.uk/home/books/article-2024591/Exploited-raped-controlled-punished-English--mans-ambition-Welsh.html">backward</a> - bordering on a socially acceptable form of ‘playful’ <a href="https://www.theguardian.com/commentisfree/2018/mar/15/anti-welsh-bigotry-eddie-jones-england-brexit">bigotry.</a>  
+
+<br><br> To this end we sought to investigate the contemporary education and skills training infrastructure that exists in South Wales and the impacts of Policy Decisions to support people in the various forms of education or skills training.<br><br> 
+                Please use the menu below to explore our findings of skills and education training in Wales : 
+            </p>
+            <select id="slevel" onchange="showChart()"> <!-- Function located in skillspage.js-->
+                <option value="Compulsory">Compulsory Education</option> 
+                <option value="sankey_chartu">Higher Education</option>
+                <option value="Tertiary">Vocational Training and Non-Standard qualifications</option>    
+            </select>
+            <div id="sankey_chartu">
+            </div>
+            <br><br>
+            <article class="sankey_chartu">Welsh Universities are held in high esteem, both for the quality of education they provide to their students, and for the quality of research they produce. This has not however, led to the development of a local highly skilled work-force. The “Brain Drain” effect suffered by Wales is significant, with a Resolution Foundation reporting that twice as many university graduates leave Wales than attend Welsh Universities.  ONS data shows that Wales has the highest level of graduates working in non-graduate roles at 20% 
+                
+                27.7% of the 2017 cohort of Welsh university attendees would go on to jobs in England. <br><br>Wales had the lowest retention rate of graduates amongst nations of the UK at 64.9%, a 5 % drop in the amount of graduates observed in 2012. “Wales has been a net exporter of jobs for some time.” Says Professor of Social Sciences Alan Felstead.  “There is a high level of competition for graduate-level positions. Wales is no exception.” As of the end of 2017,    </article>
+            <div id="Compulsory"></div>
+            <arcicle class="Compulsory"><p>They're burning</p></arcicle>
+            <div id="Tertiary"></div>
+            <article class="Tertiary"><div><h2>Cardiff Area FE composition</h2><div></div><br>The Additional learning, non-traditional qualifications and vocational sectors of education are oft overlooked in the greater context of educational performance. As many countries braces themselves for the impending <a href="https://www.bbc.co.uk/news/business-47691078">automation</a> boom retraining and skills development will become an even bigger priority. Wales difficulty in adjusting to a post coal centric economy is still a recent memory, according to a 2008 <a href="https://www.channel4.com/media/c4-news/pdf/coalfields.pdf">study</a>
+
+                found that of the estimated 27,200 coal jobs held by men only replaced 5,200 jobs at the end of a twenty-year period (1981-2004) non-coal jobs. A further study by Sheffield Hallum University found that between 2008 and 2012 the job replacement rate contained within the <a href=“https://www.nmrs.org.uk/mines-map/coal-mining-in-the-british-isles/swales/”>“South Wales Coalfield”</a> region was a startlingly low 41%.<br><br> The South Wales valleys region (of which is part of the coalfield) is determined by the EU to have the lowest GDP of any member state <a href=”http://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-513634_QID_4F7314C9_UID_-3F171EB0&layout=TIME,C,X,0;GEO,L,Y,0;UNIT,L,Z,0;INDICATORS,C,Z,1;&zSelection=DS-513634INDICATORS,OBS_FLAG;DS-513634UNIT,PPS_HAB_EU;&rankName1=UNIT_1_2_-1_2&rankName2=INDICATORS_1_2_-1_2&rankName3=TIME_1_0_0_0&rankName4=GEO_1_2_0_1&sortR=DESC_9&sortC=ASC_-1_FIRST&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&footnes=false&empty=false&wai=false&time_mode=NONE&time_most_recent=false&lang=EN&cfo=%23%23%23%2C%23%23%23.%23%23%23”>region.</a> As such, manufacturing jobs are now a precious commodity in Wales as the ongoing financial <a href=” https://www.bbc.co.uk/news/uk-wales-47882935”>precarity</a> surrounding Tata’s Welsh operations, as the consistent call for accommodations from of local and national <a href=” https://www.thechemicalengineer.com/news/uk-government-s-failure-to-invest-in-tata-steel-criticised-by-welsh-first-minister/”>governments </a> demonstrate. The propensity of work in South Wales to be manual in nature also increases the likelihood for the economically inactive to claim health related benefits. Physical injuries are an unwelcome but anticipated side effect of manually labour - sometimes accommodations can be made within a given workplace, however when jobs and entire industries disappear, these physical injuries are difficult to accommodate back into the labour force.  As such this leads to a “doubled” welfare cost as those claiming physical incapacity benefits, will often also often claiming out of work benefits. The sad reality is most transfers out of these benefits programmer are not because claimants find work, but because they reach retirement age.  
+                
+               <br><br> “I remember going to the classes but, if I'm honest. I don’t remember much else!” says John Sullivan, from Tonypandy. John previously worked for a while at the Tower Colliery. After final closure over ten years ago, John attempted to redevelop his skills. “The problem wasn’t my bloody Cv. It was what was ON my CV! I’ve worked every day of my life, but I’m an old man, you want me to do computers now?! It’s bloody daft!” 
+                
+                John’s story is not an uncommon one, digital literacy has been a Welsh Priority since the government commissions the 2010 Digital inclusion strategy was devised (this would later become known as Digital Communities Wales). In a relatively short amount of time significant gains have been made in digital literacy, but only at the lowest level of understanding. 94% of survey respondents to a 2018 review of  <a href=”https://gov.wales/sites/default/files/statistics-and-research/2019-01/national-survey-wales-internet-use-digital-skills-2017-18.pdf”> digital skills </a> had “managed information” (using search engines, downloading pictures) compared to 61% who had used “problem solving” (such as watching self-help videos, or using customer support). This number falls to 38% when considering “Creating” which includes form filling (and thus applying for work).
+                <br><br> While it is encouraging that engagement overall is increasing – especially amongst the older userbase, the practical implementation of these skills in a professional context is still at a very low level.  
+                
+                In 2014 the <a href=”http://www.oecd.org/education/The-Welsh-Education-Reform-Journey-FINAL.pdf">OECD</a> had identified that main impeding factor to education reform in Wales was a lack of Leadership development within Welsh Education. Leadership skills had been identified by business interests as lacking with the Open University reporting that <a href=”https://www3.open.ac.uk/media/fullstory.aspx?id=32671”>64% </a> of organizations struggled to recruit for positions, these positions would often be given to someone deemed “underqualified” or would simply be left open. The Welsh Government responded by starting the <a href=“https://gov.wales/national-academy-educational-leadership-nael-remit-letter-2018-2021"> National Academy for Educational Leadership</a> in 2018. </article>
+            <h2></h2>
+            <div id="cardifffe"></div><br><br>
+       
+            <div class='pure-g'>
+                <div id="alleducation"></div>
+
+
+
+            </div>
+
+
+            <div class="pure-g">
+
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src='JS/menutoggle.js'></script>
+<script src='JS/skillspage.js'></script>
+<script src='JS/skillschart.js'></script>
+</body>
