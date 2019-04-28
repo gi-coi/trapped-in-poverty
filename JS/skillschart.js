@@ -1,7 +1,3 @@
-var higher2015 = [];
-var higher2016 = [];
-var higher2017 = [['GraduatingfromWelshUniversities','Male',12780],['GraduatingfromWelshUniversities','Female',15990],['Male','Agriculture&relatedsubjects',145],['Male','Architecture,building&planning',365],['Male','BiologicalSciences',1785],['Male','Business&administrativestudies',1520],['Male','ComputerScience',925],['Male','CreativeArts&Design',1010],['Male','Education',720],['Male','Engineering&Technology',1750],['Male','Historical&PhilosophicalStudies',575],['Male','Languages',425],['Male','Law',335],['Male','MassCommunicationsandDocumentation',270],['Male','MathematicalSciences',230],['Male','Medicine&Dentistry',270],['Male','PhysicalSciences',930],['Male','SocialStudies',925],['Male','SubjectsalliedtoMedicine',580],['Female','Agriculture&relatedsubjects',220],['Female','Architecture,building&planning',170],['Female','BiologicalSciences',2200],['Female','Business&administrativestudies',1350],['Female','ComputerScience',135],['Female','CreativeArts&Design',1500],['Female','Education',2405],['Female','Engineering&Technology',215],['Female','Historical&PhilosophicalStudies',600],['Female','Languages',900],['Female','Law',625],['Female','MassCommunicationsandDocumentation',380],['Female','MathematicalSciences',135],['Female','Medicine&Dentistry',440],['Female','PhysicalSciences',565],['Female','SocialStudies',1770],['Female','SubjectsalliedtoMedicine',2335],['University','GraduatedMale',6320],['University','GraduatedFemale',9715],['GraduatedMale','Full-TimeWork',2560],['GraduatedMale','Part-TimeWork',555],['GraduatedMale','Primarilyinworkandalsostudying',160],['GraduatedMale','Primarilystudyingandalsoinwork',145],['GraduatedMale','Full-TimeStudy',680],['GraduatedMale','Part-TimeStudy',60],['GraduatedMale','DuetoStartWork',40],['GraduatedMale','Unemployed',180],['GraduatedMale','Other',170],['GraduatedMale','ExplicitRefusal',230],['GraduatedMale','Non-response',1545],['GraduatedFemale','Full-TimeWork',3855],['GraduatedFemale','Part-TimeWork',1140],['GraduatedFemale','Primarilyinworkandalsostudying',210],['GraduatedFemale','Primarilystudyingandalsoinwork',285],['GraduatedFemale','Full-TimeStudy',1020],['GraduatedFemale','Part-TimeStudy',100],['GraduatedFemale','DuetoStartWork',40],['GraduatedFemale','Unemployed',150],['GraduatedFemale','Other',320],['GraduatedFemale','ExplicitRefusal',300],['GraduatedFemale','Non-response',2290]]
-
 
 
 google.charts.load('current', {packages:['sankey']});
@@ -190,7 +186,7 @@ google.charts.setOnLoadCallback(drawChart5);
             width : 1000,
             sankey: { node: { nodePadding: 5 } }
         } ;
-        var chart = new google.visualization.Sankey(document.getElementById('sankey_chartu'));
+        var chart = new google.visualization.Sankey(document.getElementById('us_Chart'));
         chart.draw(data, options);
         }
 
@@ -222,7 +218,7 @@ google.charts.setOnLoadCallback(drawChart5);
                 width : 800,
                 sankey: { node: { labelPadding: 10 } }
             } ;
-            var chart = new google.visualization.Sankey(document.getElementById('Compulsory'));
+            var chart = new google.visualization.Sankey(document.getElementById('cs_Chart'));
             chart.draw(data, options);
             }
     
@@ -419,7 +415,7 @@ google.charts.setOnLoadCallback(drawChart5);
         width : 800,
         sankey: { node: { labelPadding: 10 } }
     } ;
-    var chart = new google.visualization.Sankey(document.getElementById('cardifffe'));
+    var chart = new google.visualization.Sankey(document.getElementById('ts_Chart2'));
     chart.draw(data, options);
     }
 
@@ -475,7 +471,7 @@ function drawChart4() {
         width : 800,
         sankey: { node: { labelPadding: 10 } }
     } ;
-    var chart = new google.visualization.Sankey(document.getElementById('Tertiary'));
+    var chart = new google.visualization.Sankey(document.getElementById('ts_Chart'));
     chart.draw(data, options);
     }
 
@@ -617,7 +613,7 @@ function drawChart5() {
         width : 800,
         sankey: { node: { labelPadding: 10 } }
     } ;
-    var chart = new google.visualization.Sankey(document.getElementById('alleducation'));
+    var chart = new google.visualization.Sankey(document.getElementById('as_Chart'));
     chart.draw(data, options);
     }
 
