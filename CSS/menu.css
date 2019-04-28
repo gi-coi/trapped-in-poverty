@@ -87,9 +87,8 @@ svg {
     letter-spacing: initial;
 }
 
-/* ALEKS'S CSS (skills.html)*/
 
-.sankey_chartu,#sankey_chartu, .Compulsory, #Compulsory, .Tertiary,#Tertiary,.alleducation,#alleducation,.cardifffe, #cardifffe {
+#us_Chart,#us_Text,#cs_Chart,#cs_Text,#ts_Chart1,#ts_Chart2,#ts_Text,#ts_Text2,#as_Chart,#as_Text {
     display:none;
     align-content: center;
 }
