@@ -88,7 +88,7 @@ svg {
 }
 
 
-#us_Chart,#us_Text,#cs_Chart,#cs_Text,#ts_Chart1,#ts_Chart2,#ts_Text,#ts_Text2,#as_Chart,#as_Text {
+#us_Chart,#us_Text,#cs_Chart,#cs_Text,#ts_Chart,#ts_Chart2,#ts_Text,#ts_Text2,#as_Chart,#as_Text {
     display:none;
     align-content: center;
 }
