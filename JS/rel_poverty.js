@@ -1,6 +1,6 @@
 
 (function  () { // basic dimensions
- var width = 700;
+ var width = 800;
  var height = 600;
  var margin = { top: 30, right: 30, bottom: 30, left: 30 };
 

@@ -1,7 +1,7 @@
        (function () {
        
        // basic dimensions
-        var width = 900;
+        var width = 800;
         var height = 600;
         var margin = { top: 30, right: 30, bottom: 30, left: 30 };
 
@@ -44,7 +44,7 @@
             .select("#childVis")
             .append("svg")
             .attr("height", height)
-            .attr("width", width + 200)
+            .attr("width", width)
             .append("g")
             .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
@@ -125,10 +125,6 @@
 
         // colour scale
         var colours = d3.scaleOrdinal(d3.schemeCategory10);
-
-
-
-
 
 
 
