@@ -1,0 +1,26 @@
+
+
+    .bar {
+      font-family: Arial;
+      font-size: 13px;
+      shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+      stroke-width: 2;
+    }
+
+    .y.axis path {
+      stroke-width: 0
+    }
+
+    .y.axis line {
+      stroke: #aaa;
+      stroke-width: 2;
+    }
+
+    .legend {
+      fill: #000;
+      font-size: 12.5px;
+      font-style: italic;
+    }

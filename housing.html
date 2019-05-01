@@ -1,0 +1,159 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A layout example with a side menu that hides on mobile, just like the Pure website.">
+    <title>Housing</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+    
+            <link rel='stylesheet' href='CSS/normalize.css'>
+            <link rel="stylesheet" href="CSS/menu.css">
+            <link rel="stylesheet" href="CSS/homeless_deaths.css">
+            <link rel="stylesheet" href="CSS/gendergap.css">
+            <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
+   
+</head>
+<body>
+
+
+
+<!--https://purecss.io/layouts/side-menu/-->
+
+
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="#">MENU</a>
+
+           
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="index.html" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">The project</a></li>
+
+                <li class="pure-menu-item">
+                    <a href="relative_poverty.html" class="pure-menu-link menu-item-divided pure-menu-selected">Data</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="housing.html" class="pure-menu-link">Housing</a>
+                </li>
+
+                <li class="pure-menu-item"><a href="skills.html" class="pure-menu-link">Skills</a></li>
+               
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link">Social Business</a>
+                    <ul>
+                       <li> <a href='#'>The Big Issue</a></li>
+                       <li> <a href='#'>Suspended Coffees</a></li>
+                    </ul>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="header">
+            <h1>Homelessness</h1>
+        </div>
+
+        <div class="content">
+            
+            <h2 class="content-subhead">Homeless and rough sleepers in Wales</h2>
+            <p>Cardiff has the greatest numbers of rough sleepers in Wales.</p>
+            
+            <div class='pure-u-3-3'>
+                <div id='roughsleepers_Vis'></div>
+            </div>
+            
+            <div class='pure-u-3-3 interlude'>
+                <p>
+                    Increasing homeless people and rough sleepers show how is welsh Government and community failing to tackle the poverty problems. 
+                </p>
+                <p>
+                    Cardiff, the capital city of Wales, has the greatest numbers of homeless people in Wales and the numbers are unrivaled compared to other cities. According to the Welsh Government, the total counted rough sleepers in Cardiff reached 64 in 2018/19, which is more than three times of the number of Swansea. The estimated number of rough sleepers in Cardiff is 100, which is about one-third of the total number of rough sleeprs(347) in Wales. 
+                </p>
+                <p>
+                    Homeless people are easily exposed to various risks from cold and hunger to violence, alcohol or drug addiction and sex offense. Last winter, many homeless people in Cardiff relied on a tent to escape from the freezing cold, and some of them are ended up going to jail because of the drug abuse, and a man even found dead in a tent on St. Mary’s street in December last year.
+                </p>  
+            </div>
+            
+            <h2 class="content-subhead">Deaths of homeless people in Wales</h2>
+            <p>Numbers of deaths of homeless people have not decreased since 2014.</p>
+            <div class='pure-u-3-3'>
+                <div id='deaths_Vis'></div>
+            </div>
+            
+            <div class='pure-u-3-3 interlude'>
+                <p>
+                    Deaths of homeless people in Wales become a serious social problem in recent years. According to the Office for National Statistics, identified deaths of  homeless people increased sharply since 2014, and estimated deaths show that at least 62 homeless people were dead in recent three years. Many of these people were able to live if they had received adequate physical and mental health care. 
+                </p>
+            </div>
+            
+            <h2 class="content-subhead">Homelessness relief rates of cities in Wales</h2>
+            <p>Only 34% of homeless people have prevented by the government.</p>
+            <div class='pure-u-3-3'>
+                <div id='relief_Vis'></div>
+            </div>
+            <div class='pure-u-3-3 interlude'>
+                <p>
+                    However, Caridff that has the highest number of homeless people in Wales is still struggling to solve this problem. According to the Welsh Government report, in 2017-2018 1977 households in Cardiff were assessed as homeless, and of these only 34% were successfully relieved from homelessness which means that people who have not been saved remained at risks of staying temporary accommodation or rough sleeping on the streets. 
+                </p>
+                <p>
+                    A Welsh Government spokesperson said, “Tackling homelessness and rough sleeping issue is our priority. We are investing in new homes, protecting our social housing stock and seeking new and innovative ways to ensure that every family has a decent home.” 
+                </p>
+            </div>
+            
+            <h2 class="content-subhead">Female is much more vulnerable to homelessness in Cardiff</h2>
+            <P>Only 68.7% of female who was at risk of homelessness was saved, while 80.9% of male was saved.</P>
+            <div class='pure-u-3-3'>
+                <div id='gendergap_Vis'></div>
+            </div>
+            <div class='pure-u-3-3 interlude'>
+                <p>
+                    But, reality seems urgent. Females are more vulnerable to homelessness especially in Cardiff. In the same period, only 68.7% of females treatened with homelessness were prevented in Cardiff, and this number is extremely lower than that of male(80.9%). This is a noticeable difference compared to the Wales’ figures.
+                </p>
+                <p>
+                    Rhiannon Wozencroft, support team manager of Cardiff YMCA Housing Association said, “homeless women over 25 years old are increasing in recent years and many of them have experienced family breakdowns. This is an important issue that can affect both women and their children.”
+                </p>
+                <p>
+                    “In 2016-2017, 10,407 women in Wales asked for help with homelessness. Many of them were single parents or pregnant, putting a significant number of children at risk of homelessness as well. Women homeless are also exposed to the sexual harassment or violence, and abuse on the streets. For them, living in a mixed-gender accommodation is not a proper option,” said name, Communication Officer of Cardiff Llamau. 
+                </p>
+                <p>
+                    Many experts also argue that the government does not properly reflect the voices of homeless people in its policies. Rebecca Jackson, Policy research officer of Shelter Cymru said, “When you are hearing the same story almost every person you speak with, you have to take that on board. I think there is a real issue with the voices of people sleeping rough not being valued by a local authority. If you are providing homelessness services and not listening to your homeless clients, this is why arguably you are not very effective.” 
+                </p>
+                <p>
+                    She added that, “If some organisations say there are ‘empty spaces’ for homeless people, and if it is talking about floor space, that is not an appropriate offer. Cardiff Council’s response to him dying on St. Mary’s Street was “This person has a tenancy,” but he had just been released from hospital because a raging addiction and he had said to me that he didn’t want to go into his flat where he had no gas, no electric, no food, and he didn’t know anyone there.”
+                </p>
+                <p>
+                    Experts point out that providing only palces to sleep for the homeless can not be a solution. Whether Homeless people are male or female, young or old, they have different issues and the government need to approach them to provide practical support. 
+                </p>
+                <p>
+                    “The people on the street are people that we’ve housed, but their connections are with a group of people on the street. So what we’re trying to do is find diversionary activities to build their confidence. It can’t just be getting people trained for work,” said Lynda Thorne, Councillor for Grangetown & Cabinet member Housing & Communities, Cardiff Council.
+                </p>
+                
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+<script src='JS/menutoggle.js'></script>
+<script src='JS/roughsleepers.js'></script>
+<script src='JS/homeless_death.js'></script>
+<script src='JS/homeless_relief.js'></script>
+<script src="JS/gendergap.js"></script>    
+
+
+
+</body>
