@@ -1,9 +1,9 @@
 (function () {
 
     // basic dimensions
-    var width = 800;
+    var width = 850;
     var height = 600;
-    var margin = { top: 30, right: 30, bottom: 30, left: 30 };
+    var margin = { top: 30, right: 100, bottom: 30, left: 30 };
 
 
     // FIRST CHART
@@ -208,6 +208,7 @@
 
 
             document.getElementById('resetButton').addEventListener('click', function () {
+                document.getElementById('catSelector').value = 'All households';
                 householdsChart(data);
             })
 
@@ -263,6 +264,9 @@
             .entries(filteredData);
 
 
+        relax(nested);
+
+        console.log(nested);
 
         var group = svg.selectAll('.lineGroup')
             .data(nested, function (d) {
@@ -291,29 +295,63 @@
                 return {
                     region: d.key,
                     value: d.value.leaves,
-                    labelY: d.value.labelY,
+                    labelY: d.labelY,
                     labelX: d.value.labelX
                 }
             })
 
 
-            .attr('transform', function (d) {
+            .attr('transform', function (d, i) {
 
-                return ('translate(' + (xScale(d.labelX) + 3) + ',' + yScale(d.labelY) + ')')
+
+                return ('translate(' + (xScale(d.labelX) + 30) + ',' + yScale(d.labelY) + ')')
 
             })
             .attr('x', 3)
             .attr('dy', '0.35em')
             .attr('class', 'label')
-            .style('font', '16px courier')
+            .style('font', '16px sans-serif')
             .text(function (d) {
                 return d.region
+            })
+            .attr('stroke', function (d) {
+
+                return colours(d.region)
             })
 
 
 
+        // connect labels to paths
+
+        var marker = svg.selectAll(".marker")
+            .data(nested);
 
 
+        var new_marker = marker.enter()
+            .append("line")
+            .attr('class', 'marker');
+
+
+        new_marker.merge(marker)
+            .attr("x1", function (d) {
+                console.log(d.value.labelY);
+                console.log(d.labelY)
+                return xScale(d.value.labelX);
+            })
+            .attr("y1", function (d) {
+                return yScale(d.value.labelY);
+            })
+            .attr("x2", function (d) {
+                return xScale(d.value.labelX) + 30;
+            })
+            .attr("y2", function (d) {
+                return yScale(d.labelY);
+            })
+            .attr('stroke', 'black')
+            .attr('stroke-width', '0.5px');
+
+
+        marker.exit().remove();
 
         new_group
             .append('path')
@@ -376,7 +414,7 @@
 
 
                     .text(d.data.value + '%')
-                    .style('font', '13px courier')
+                    .style('font', '13px sans-serif')
 
 
 
@@ -482,7 +520,7 @@
             })
             .attr('stroke-width', '3px')
             .attr('fill', 'none');
-          
+
 
 
 
@@ -507,7 +545,7 @@
             .attr('x', 3)
             .attr('dy', '0.35em')
             .attr('class', 'label')
-            .style('font', '16px courier')
+            .style('font', '13px sans-serif')
             .text(function (d) {
                 return d.region
             })
@@ -540,7 +578,7 @@
 
 
                     .text(d.data.value + '%')
-                    .style('font', '13px courier')
+                    .style('font', '13px sans-serif')
 
 
 
@@ -550,13 +588,20 @@
             .on("mouseout", function (d) {
                 focus2.attr("transform", "translate(-100,-100)");
             }, true)
-            .on('click', function(d) {
+            .on('click', function (d) {
+                document.getElementById('catSelector').value = d.data.household;
                 toBar(d.data.household, data);
             })
 
 
         vr.exit().remove();
 
+        // update Y axis
+        d3.select("#childWales svg")
+            .select(".y.axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(yScaleW));
 
 
     }
@@ -582,8 +627,9 @@
 
 
 
-        svg2.selectAll('.line').exit().remove();
-        svg2.selectAll('.voronoi').exit().remove();
+        svg2.selectAll('.line').remove();
+        svg2.selectAll('.voronoi').remove();
+        focus2.attr("transform", "translate(-100,-100)");
 
         var groups = svg2.selectAll('.h_group')
             .data(filtered, function (d) {
@@ -641,7 +687,42 @@
 
         })
     }
+
+
+    function relax(data) {
+        var spacing = 16;
+        var dy = 2;
+        var repeat = false;
+        var count = 0;
+        data.forEach(function (dA, i) {
+
+            var yA = dA.value.labelY;
+
+            data.forEach(function (dB, j) {
+
+                var yB = dB.value.labelY;
+
+                if (i === j) {
+                    return;
+                }
+                diff = yA - yB;
+                if (Math.abs(diff) > spacing) {
+                    return;
+                }
+                repeat = true;
+                magnitude = diff > 0 ? 1 : -1;
+                adjust = magnitude * dy;
+                dA.labelY = +yA + adjust;
+                dB.labelY = +yB - adjust;
+                dB.labelY = dB.labelY > height ? height : dB.labelY
+                dA.labelY = dA.labelY > height ? height : dA.labelY
+            })
+        })
+        return data;
+    }
 })();
+
+
 
 
 

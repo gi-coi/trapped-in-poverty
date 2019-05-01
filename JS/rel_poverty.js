@@ -1,8 +1,8 @@
 
 (function  () { // basic dimensions
- var width = 800;
+ var width = 850;
  var height = 600;
- var margin = { top: 30, right: 30, bottom: 30, left: 30 };
+ var margin = { top: 30, right: 100, bottom: 30, left: 30 };
 
  // line generator
  var lineGen = d3
@@ -139,11 +139,18 @@ focus.append("text")
         })
         .entries(data);
 
+
+     relax(nested);
+
         var group = svg.selectAll('.lineGroup')
         .data(nested, function (d) {
 
             return d.value.housing + d.value.poverty;
         })
+
+
+
+    
 
 
     var new_group = group
@@ -166,28 +173,60 @@ focus.append("text")
             return {
                 region: d.key,
                 value: d.value.leaves,
-                labelY: d.value.labelY,
+                labelY: d.labelY,
                 labelX: d.value.labelX
             }
         })
 
 
-        .attr('transform', function (d) {
-
-            return ('translate(' + (xScale(d.labelX) + 3) + ',' + yScale(d.labelY) + ')')
+        .attr('transform', function (d, i) {
+                
+                
+            return ('translate(' + (xScale(d.labelX) + 30) + ',' + yScale(d.labelY) + ')')
 
         })
         .attr('x', 3)
         .attr('dy', '0.35em')
         .attr('class', 'label')
-        .style('font', '16px courier')
+        .style('font', '16px sans-serif')
         .text(function (d) {
             return d.region
         })
+        .attr('stroke', function (d) {
+            return colours(d.region)
+        })
 
 
+// connect labels to paths
+        var marker = svg.selectAll(".marker")
+        .data(nested);
 
 
+    var new_marker = marker.enter()
+        .append("line")
+        .attr('class', 'marker');
+
+
+    new_marker.merge(marker)
+        .attr("x1", function(d) {
+            console.log(d.value.labelY);
+            console.log(d.labelY)
+            return xScale(d.value.labelX);
+        })
+        .attr("y1", function(d) {
+            return yScale(d.value.labelY);
+        })
+        .attr("x2", function(d) {
+            return xScale(d.value.labelX) + 30;
+        })
+        .attr("y2", function(d) {
+            return yScale(d.labelY);
+        })
+        .attr('stroke', 'black')
+        .attr('stroke-width', '0.5px');
+
+
+marker.exit().remove();
 
 
     new_group
@@ -303,4 +342,39 @@ focus.append("text")
         svg.attr("height", Math.round(targetWidth / aspect));
     }
 }
+
+function relax(data) {
+    var spacing = 16;
+    var dy = 2;
+    var repeat = false;
+    var count = 0;
+    data.forEach(function(dA, i) {
+        
+        var yA = dA.value.labelY;
+       
+        data.forEach(function(dB, j) {
+           
+            var yB = dB.value.labelY;
+           
+            if (i === j) {
+                return;
+            }
+            diff = yA - yB;
+            if (Math.abs(diff) > spacing) {
+                return;
+            }
+            repeat = true;
+            magnitude = diff > 0 ? 1 : -1;
+            adjust = magnitude * dy;
+            dA.labelY = +yA + adjust;
+            dB.labelY = +yB - adjust;
+            dB.labelY = dB.labelY > height ? height : dB.labelY
+            dA.labelY = dA.labelY > height ? height : dA.labelY
+        })
+    })
+   return data;
+} 
+
 })();
+
+
