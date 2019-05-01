@@ -27,7 +27,7 @@
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             
             // import the data
-            d3.csv("homelessness_deaths.csv", function(error, data) {
+            d3.csv("csv/homelessness_deaths.csv", function(error, data) {
                 
                 data.forEach(function(d) {
                     d.year = parseYear(d.year);

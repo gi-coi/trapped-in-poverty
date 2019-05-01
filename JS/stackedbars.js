@@ -35,7 +35,7 @@
     .range(['#882D60', '#7A9F35']);
 
 
-    d3.csv('cp_households_cat.csv', 
+    d3.csv('csv/cp_households_cat.csv', 
      function(data) {
         
 

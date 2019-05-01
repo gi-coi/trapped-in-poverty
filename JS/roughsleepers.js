@@ -21,7 +21,7 @@
             var yScale = d3.scaleLinear()
                             .range([height, 0]);
         
-            d3.csv("rough_sleepers.csv", function(d) {
+            d3.csv("csv/rough_sleepers.csv", function(d) {
                 
                 d.numbers = +d.numbers;
                 d.cities = d.cities;

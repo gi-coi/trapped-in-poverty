@@ -22,7 +22,7 @@
             var yScale = d3.scaleLinear()
                             .range([height, 0]);
         
-            d3.csv("households_relieved.csv", function(d) {
+            d3.csv("csv/households_relieved.csv", function(d) {
                 
                 d.percentage = +d.percentage;
                 d.cities = d.cities;

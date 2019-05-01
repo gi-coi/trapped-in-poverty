@@ -66,7 +66,7 @@ focus.append("text")
 
 
  d3.csv(
-     "poverty_total.csv",
+     "csv/poverty_total.csv",
      // do the conversion to number with an accessor function on loading, rather than looping through the data later
      function(d) {
          d.value = +d.value;

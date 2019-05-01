@@ -128,7 +128,7 @@
 
 
     d3.csv(
-        'child_poverty_total.csv',
+        'csv/child_poverty_total.csv',
         function (d) {
             d.value = +d.value;
             return d;
@@ -169,7 +169,7 @@
 
 
     d3.csv(
-        'cp_households_wales.csv',
+        'csv/cp_households_wales.csv',
         function (d) {
             d.value = +d.value;
             return d;
