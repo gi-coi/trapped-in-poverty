@@ -23,6 +23,11 @@ body * {
     padding-left: 1em;
 }
 
+a.sublink {
+    white-space: normal;
+    padding-right: .1em;
+}
+
 
 div.tooltip {   
     position: absolute;           
@@ -39,15 +44,44 @@ div.tooltip {
 
 
 section.profile {
-    display: flex;
     padding: 2em;
     background-color: lightgray;
+}
+div.profile {
+    display: flex;
+    justify-content: center;
+
 }
 
 section.profile iframe {
     align-self: center;
 }
 
+.insert {
+    padding: 1em 2em;
+    background: aliceblue;
+    border-top: 5px #777879 solid;
+    border-bottom: 5px #777879 solid;
+    line-height: 1.5em;
+    font-size: .95em;
+   
+}
+
+
+
+[class *= "pure-u"] p {
+    color: #3a3838;
+}
+
+[class *= 'pure-u'] a {
+    color: #ff4b39;
+    font-weight: 600;
+}
+
+
+[class *= 'pure-u'] a:hover {
+    color: #ef7b6f;
+}
 /*
 Add transition to containers so they can push in and out.
 */
