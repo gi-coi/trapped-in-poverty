@@ -9,8 +9,8 @@ body * {
 
 
 .interlude {
-    padding: 3em 0;
-    line-height: 3em;
+    padding: 2.5em 0;
+    line-height: 2.5em;
 }
 
 .pure-img-responsive {
@@ -36,6 +36,17 @@ div.tooltip {
     border-radius: 8px;           
     pointer-events: none;         
   }
+
+
+section.profile {
+    display: flex;
+    padding: 2em;
+    background-color: lightgray;
+}
+
+section.profile iframe {
+    align-self: center;
+}
 
 /*
 Add transition to containers so they can push in and out.
