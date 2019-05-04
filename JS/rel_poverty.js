@@ -36,7 +36,8 @@
  // SCALES
 
  // colour scale
- var colours = d3.scaleOrdinal(d3.schemeCategory10);
+ var colours = d3.scaleOrdinal()
+ .range(["#7f64b9","#9f9244"]);
 
  // axis scales
  var xScale = d3.scaleBand().rangeRound([0, width - margin.left - margin.right]);

@@ -122,7 +122,8 @@
     // SCALES
 
     // colour scale
-    var colours = d3.scaleOrdinal(d3.schemeCategory10);
+    var colours = d3.scaleOrdinal()
+    .range(["#7f64b9", "#9f9244"]);
 
 
 
