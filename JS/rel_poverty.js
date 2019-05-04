@@ -106,6 +106,18 @@ focus.append("text")
             return update(filteredData);
         })
 
+        
+        // caption for data source
+        
+        d3.select('#povertyVis')
+        .append('p')
+        .attr('class', 'source')
+        .html('Source: Department of Work and Pensions, ')
+        .append('a')
+        .attr('href', 'https://www.gov.uk/government/collections/households-below-average-income-hbai--2')
+        .attr('target', '_blank')
+        .text('HBAI');
+
      }
  );
 
@@ -125,7 +137,7 @@ focus.append("text")
     );
 
 
-    // attempt at multiple nesting? 
+// nest data to add information on label positioning + unique keys (makes it easier to update chart)
     var nested = d3.nest()
         .key(function (d) { return d.Region })
         .rollup(function (leaves) {
@@ -294,6 +306,8 @@ marker.exit().remove();
         }, true);
 
     vr.exit().remove();
+
+
 
 }
 

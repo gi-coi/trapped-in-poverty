@@ -45,7 +45,7 @@ div.tooltip {
 
 section.profile {
     padding: 2em;
-    background-color: lightgray;
+    background-color: aliceblue;
 }
 div.profile {
     display: flex;
@@ -65,6 +65,12 @@ section.profile iframe {
     line-height: 1.5em;
     font-size: .95em;
    
+}
+
+p.source {
+    font-size: .7em;
+    text-align: right;
+    color: #8e8e8e;
 }
 
 

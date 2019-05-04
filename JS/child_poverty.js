@@ -149,6 +149,16 @@
                 .attr("class", "y axis")
                 .call(d3.axisLeft(yScale));
 
+// caption for data source
+                d3.select('#childVis')
+                .append('p')
+                .attr('class', 'source')
+                .html('Source: Department of Work and Pensions, ')
+                .append('a')
+                .attr('href', 'https://www.gov.uk/government/collections/households-below-average-income-hbai--2')
+                .attr('target', '_blank')
+                .text('HBAI');
+
             // event listener to toggle housing costs
             document.getElementById("housing_costs").addEventListener("change", function () {
                 var filteredData = filterData(poverty_data);
@@ -196,7 +206,14 @@
 
 
 
-
+                d3.select('#childWales')
+                .append('p')
+                .attr('class', 'source')
+                .html('Source: ')
+                .append('a')
+                .attr('href', 'https://statswales.gov.wales/Catalogue/Community-Safety-and-Social-Inclusion/Poverty/childreninrelativeincomepoverty-by-economicstatusofhousehold')
+                .attr('target', '_blank')
+                .text('StatsWales');
 
 
 
