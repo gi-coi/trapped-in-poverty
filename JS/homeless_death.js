@@ -4,7 +4,7 @@
     // set the dimensions of the graph
     var margin = { top: 30, right: 20, bottom: 70, left: 70 },
         width = 800 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 550 - margin.top - margin.bottom;
 
     // parse the year
     var parseYear = d3.timeParse("%Y");

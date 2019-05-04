@@ -2,10 +2,10 @@
 
     const data = {
       Issue: [
-        'Wale_Male',
-        'Wale_Female',
-        'Cardiff_Male',
-        'Cardiff_Female'
+        'Wales - Male',
+        'Wales - Female',
+        'Cardiff - Male',
+        'Cardiff - Female'
       ],
 
       Successful_prevention: [64.8, 67.3, 80.9, 68.7],
@@ -14,7 +14,7 @@
       Other_reasons: [6.7, 6.2, 0.6, 1.5]
     };
 
-    const width = 700,
+    const width = 800,
       height = 600,
       margin = { top: 20, right: 200, bottom: 100, left: 40 },
       chartWidth = width - margin.left - margin.right,
@@ -32,6 +32,8 @@
 
     const answers = ['Successful_prevention', 'Unsuccessful_prevention', 'Application_withdrawn', 'Other_reasons'];
 
+
+    
     const x = d3
       .scaleBand()
       .paddingInner(0.2)
@@ -142,6 +144,11 @@
       })
       .attr('dy', '0.35em')
       .attr('fill', '#000')
-      .text(d => d.key === 'None' ? 'No Opinion': d.key);
+      .text(function (d) {
+        var lbl = d.key.replace('_', ' ');
+       return lbl;
+       // return d.key === 'None' ? 'No Opinion': d.key;
+      })
+      //.text(d => d.key === 'None' ? 'No Opinion': d.key);
     
 }) ();
