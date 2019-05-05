@@ -1,0 +1,145 @@
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(janitor)
+```
+
+
+Source: household expenditure by country and region (Table 33)
+https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/expenditure/datasets/householdexpenditurebycountriesandregionsuktablea33
+
+```{r}
+weekly_latest <- read.csv('../Source/Expenditure/weekly_exp.csv')
+
+
+weekly_latest <- weekly_latest %>%
+  clean_names()
+
+weekly_latest$year <- rep(2018, nrow(weekly_latest))
+
+glimpse(weekly_latest)
+
+weekly_latest_tidy <- weekly_latest %>%
+  gather(key = 'area', value = 'value', -commodity_or_service, -year)
+glimpse(weekly_latest_tidy)
+```
+
+```{r}
+wales_uk_latest <- weekly_latest_tidy %>%
+  filter(area == 'wales' | area == 'united_kingdom') %>%
+  arrange(desc(value))
+
+ggplot(wales_uk_latest, aes(reorder(commodity_or_service, value), value, fill = area)) + geom_col(position = 'dodge') + coord_flip() + theme_fivethirtyeight()
+```
+
+```{r}
+weekly_1315 <- read.csv('../Source/Expenditure/weekly_exp_1315.csv')
+
+
+weekly_1315 <- weekly_1315 %>%
+  clean_names()
+
+weekly_1315$year <- rep(2015, nrow(weekly_1315))
+
+glimpse(weekly_1315)
+
+weekly_1315_tidy <- weekly_1315 %>%
+  gather(key = 'area', value = 'value', -commodity_or_service, -year)
+glimpse(weekly_1315_tidy)
+```
+
+```{r}
+wales_uk_1315 <- weekly_1315_tidy %>%
+  filter(area == 'wales' | area == 'united_kingdom') %>%
+  arrange(desc(value)) 
+```
+
+
+```{r}
+weekly_1416 <- read.csv('../Source/Expenditure/weekly_exp_1416.csv')
+
+
+
+weekly_1416 <- weekly_1416 %>%
+  clean_names()
+
+
+weekly_1416$year <- rep(2016, nrow(weekly_1416))
+
+weekly_1416_tidy <- weekly_1416 %>%
+  gather(key = 'area', value = 'value', -commodity_or_service, -year)
+
+glimpse(weekly_1416_tidy)
+
+wales_uk_1416 <- weekly_1416_tidy %>%
+  filter(area == 'wales' | area == 'united_kingdom') %>%
+  arrange(desc(value))
+```
+
+```{r}
+weekly_1517 <- read.csv('../Source/Expenditure/weekly_exp_1517.csv')
+
+
+
+weekly_1517 <- weekly_1517 %>%
+  clean_names()
+
+weekly_1517$year <- rep(2017, nrow(weekly_1517))
+
+weekly_1517_tidy <- weekly_1517 %>%
+  gather(key = 'area', value = 'value', -commodity_or_service, -year)
+
+wales_uk_1517 <- weekly_1517_tidy %>%
+  filter(area == 'wales' | area == 'united_kingdom') %>%
+  arrange(desc(value))
+
+glimpse(wales_uk_1517)
+```
+Preparing year by year totals
+```{r}
+
+
+wuk_latest_tot <-  wales_uk_latest %>%
+  group_by(area) %>%
+  summarise(total = sum(value)) 
+
+wuk_latest_tot$year = rep(2018, nrow(wuk_latest_tot))
+
+
+wuk_1517_tot <- wales_uk_1517 %>%
+  group_by(area) %>%
+  summarise(total = sum(value))
+  
+wuk_1517_tot$year = rep(2017, nrow(wuk_1517_tot))
+
+
+wuk_1416_tot <- wales_uk_1416 %>%
+  group_by(area) %>%
+  summarise(total = sum(value))
+
+wuk_1416_tot$year = rep(2016, nrow(wuk_1416_tot))
+
+
+wuk_1315_tot <- wales_uk_1315 %>%
+  group_by(area) %>%
+  summarise(total = sum(value))
+
+
+wuk_1315_tot$year = rep(2015, nrow(wuk_1315_tot)) 
+
+
+overtime <- rbind(wuk_1315_tot, wuk_1416_tot, wuk_1517_tot, wuk_latest_tot)
+
+```
+
+
+Plotting changes over the years
+```{r}
+ggplot(overtime, aes(year, total, col = area)) + geom_line(size = 1.3) + 
+  theme_minimal() + 
+  labs(x = NULL, y = 'Weekly expenditure (£)', title = "Weekly expenditure from 2013-2015 to 2016-18 for UK and Wales", colour = 'Area') + 
+  scale_colour_discrete(name = 'Area', labels=c('United Kingdom', 'Wales')) + 
+  annotate('rect', xmin = 2015.8, xmax = 2016.2, ymin = min(), ymax = max(), fill = 'grey', alpha = .2) +
+  annotate('text', x = 2016, y = 460, label = 'What happened here?')
+```
+

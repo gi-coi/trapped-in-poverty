@@ -1,0 +1,318 @@
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(readODS)
+library(zoo)
+library(bbplot)
+library(extrafont)
+library(directlabels)
+
+```
+Data source: HBAI
+https://www.gov.uk/government/collections/households-below-average-income-hbai--2
+
+```{r}
+child_poverty <- read_ods('../Source/Child poverty/children-trends-hbai-1994-95-2017-18-tables.ods', sheet = '4_1tr', skip = 9, col_names = FALSE)
+
+names(child_poverty) <- c('drop1', 'area', 'year', 'bhc_50', 'bhc_60', 'bhc_70', 'drop2', 'drop3', 'ahc_50', 'ahc_60', 'ahc_70')
+
+glimpse(child_poverty)
+
+child_poverty <- child_poverty %>%
+  select(-starts_with('drop'), -area) 
+
+child_poverty <- child_poverty[(1:23), ]
+
+child_tidy <- child_poverty %>%
+  gather(key = 'category', value = 'value', -year) %>%
+  separate(col = 'category', into = c('housing costs', 'perc of median income'), sep = '_') %>%
+  clean_names()
+
+child_tidy_60 <- child_tidy %>%
+  filter( perc_of_median_income == 60)
+```
+
+```{r}
+ggplot(child_tidy_60, aes(year, value, colour = housing_costs, group = housing_costs)) + geom_line(size = 1) + theme_minimal() +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(x = 'Year', y = '% in relative poverty', title = '% of children in relative poverty') +
+  scale_colour_discrete(labels = c('Before Housing Costs', 'After Housing Costs')) +
+  theme(panel.grid.minor = element_blank(), legend.position = 'top', legend.title = element_blank())
+```
+
+```{r}
+child_poverty_regions <- read_ods('../Source/Child poverty/children-hbai-timeseries-1994-95-2017-18-tables.ods', sheet = '4_16ts', skip = 6, col_names = TRUE, na = c('', '..'))
+
+glimpse(child_poverty_regions)
+View(child_poverty_regions)
+c_p_regions_bhc <- child_poverty_regions[(1:17),]
+names(c_p_regions_bhc)[2] <- 'Region'
+
+
+
+c_p_regions_bhc <- c_p_regions_bhc[(3:17), (2:24)] %>%
+  mutate(Region = recode(Region, 'All children (per cent)3' = 'UK')) %>%
+  filter(!is.na(Region))
+
+c_p_regions_bhc_tidy <- c_p_regions_bhc %>%
+  gather(key = 'year', value = 'value', -Region)
+
+c_p_bhc_wales <- c_p_regions_bhc_tidy %>%
+  filter(Region%in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')))
+  
+c_p_bhc_wales %>%
+  mutate(housing_costs = rep('Before Housing Costs', nrow(c_p_bhc_wales))) -> c_p_bhc_wales
+
+
+```
+
+```{r}
+ggplot(c_p_bhc_wales, aes(year, value, group = Region, colour = Region)) + geom_line(size = 1, alpha = .7) +
+  theme_minimal() +
+  ylim(0, NA) +
+  labs(x = 'Year', y = '% in relative poverty', title = '% of children with less than 60% of median income in Wales (3-year average)')+
+  theme(legend.position = 'top', legend.title = element_blank(), text = element_text(family = 'Gill Sans Nova'))
+```
+```{r}
+c_p_regions_ahc <- child_poverty_regions[(21:35),]
+names(c_p_regions_ahc)[2] <- 'Region'
+
+
+
+c_p_regions_ahc <- c_p_regions_ahc[, (2:24)] %>%
+  mutate(Region = recode(Region, 'All children (per cent)3' = 'UK')) %>%
+  filter(!is.na(Region))
+
+c_p_regions_ahc_tidy <- c_p_regions_ahc %>%
+  gather(key = 'year', value = 'value', -Region)
+
+c_p_ahc_wales <- c_p_regions_ahc_tidy %>%
+  filter(Region%in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')))
+
+
+c_p_ahc_wales %>%
+  mutate(housing_costs = rep('After Housing Costs', nrow(c_p_ahc_wales))) -> c_p_ahc_wales
+
+c_p_wales <- rbind(c_p_bhc_wales, c_p_ahc_wales)
+
+c_p_wales %>%
+  mutate(poverty_type = rep('Relative poverty', nrow(c_p_wales))) -> c_p_wales
+
+
+```
+Comparison of CP in UK and Wales (Before and After Housing Costs)
+```{r}
+ggplot(c_p_wales, aes(year, value, fill = Region)) + geom_col(position = 'dodge') +
+  theme_minimal() +
+  ylim(0, NA) +
+  facet_wrap(housing_costs ~ Region, ncol = 2) +
+  labs(x = 'Year', y = '% in relative poverty', title = '% of children in relative poverty, Wales & UK (3-year average)')+
+  theme(legend.position = 'top', legend.title = element_blank(), text = element_text(family = 'Gill Sans Nova'))
+
+```
+Absolute poverty: UK and Wales
+```{r}
+child_abs_poverty <- read_ods('../Source/Child poverty/children-hbai-timeseries-1994-95-2017-18-tables.ods', sheet = '4_22ts', skip = 6, col_names = TRUE, na = c('', '..'))
+
+glimpse(child_abs_poverty)
+
+cp_abs_bhc <- child_abs_poverty[(1:17),]
+names(cp_abs_bhc)[2] <- 'Region'
+
+
+
+cp_abs_bhc <- cp_abs_bhc[(3:17), (2:24)] %>%
+  mutate(Region = recode(Region, 'All children (per cent)3' = 'UK')) %>%
+  filter(!is.na(Region))
+
+cp_abs_bhc_tidy <- cp_abs_bhc %>%
+  gather(key = 'year', value = 'value', -Region)
+
+cp_abs_bhc_wales <- cp_abs_bhc_tidy %>%
+  filter(Region%in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')))
+cp_abs_bhc_wales %>%
+  mutate(housing_costs = rep('Before Housing Costs', nrow(cp_abs_bhc_wales))) -> cp_abs_bhc_wales
+
+```
+
+```{r}
+cp_abs_ahc <- child_abs_poverty[(21:35),]
+names(cp_abs_ahc)[2] <- 'Region'
+
+
+
+cp_abs_ahc <- cp_abs_ahc[, (2:24)] %>%
+  mutate(Region = recode(Region, 'All children (per cent)3' = 'UK')) %>%
+  filter(!is.na(Region))
+
+cp_abs_ahc_tidy <- cp_abs_ahc %>%
+  gather(key = 'year', value = 'value', -Region)
+
+cp_abs_ahc_wales <- cp_abs_ahc_tidy %>%
+  filter(Region%in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')))
+
+cp_abs_ahc_wales %>%
+  mutate(housing_costs = rep('After Housing Costs', nrow(cp_abs_ahc_wales))) -> cp_abs_ahc_wales
+
+cp_abs_wales <- rbind(cp_abs_ahc_wales, cp_abs_bhc_wales)
+
+
+cp_abs_wales %>%
+  mutate(poverty_type = rep('Absolute poverty', nrow(cp_abs_wales))) -> cp_abs_wales
+
+
+poverty_total <- rbind(cp_abs_wales, c_p_wales)
+
+poverty_total_wide <- poverty_total %>%
+  spread(key = poverty_type, value = value)
+
+#write.csv(poverty_total_wide, 'child_poverty_wide.csv', row.names = FALSE)
+
+```
+
+```{r}
+ggplot(cp_abs_wales, aes(year, value, fill = Region)) + geom_col(position = 'dodge') +
+  theme_minimal() +
+  ylim(0, NA) +
+  facet_wrap(housing_costs ~ Region, ncol = 2) +
+  labs(x = 'Year', y = '% in relative poverty', title = '% of children in absolute poverty, Wales & UK (3-year average)')+
+  theme(legend.position = 'top', legend.title = element_blank(), text = element_text(family = 'Gill Sans Nova'))
+
+```
+
+Children in poverty: time series file
+Looking at children in workless households (Source is always HBAI)
+```{r}
+child_poverty_households <- read_ods('../Source/Child poverty/children-hbai-timeseries-1994-95-2017-18-tables.ods', sheet = '4_6ts', col_names = TRUE, na = c('', '..'), skip = 6)
+glimpse(child_poverty_households)
+
+child_poverty_households <- child_poverty_households[, (2:26)]
+colnames(child_poverty_households)[colnames(child_poverty_households)==""] <- "Household"
+colnames(child_poverty_households)[colnames(child_poverty_households) == '94/953'] <- "94/95"
+colnames(child_poverty_households)[colnames(child_poverty_households)=="95/963"] <- "95/96"
+cp_households_bhc <- child_poverty_households[(1:19),]
+
+
+cp_households_bhc <- cp_households_bhc %>%
+  filter(!is.na(Household) & Household != 'Before Housing Costs')%>%
+  gather(key = 'year', value = 'value', -Household) %>%
+  mutate(year = factor(year, ordered = TRUE, levels = c("94/95", "95/96", "96/97", "97/98", "98/99", "99/00", "00/01", "01/02", "02/03", "03/04", "04/05", "05/06", "06/07", "07/08", "08/09", "09/10", "10/11", "11/12", "12/13", "13/14", "14/15", "15/16", "16/17", '17/18') ))
+
+cp_work_bhc <- cp_households_bhc %>%
+  subset(Household %in%c('At least one adult in work', 'Workless families')) 
+  
+
+
+```
+
+```{r}
+work_bhc_plot <- cp_work_bhc %>%
+  filter(!is.na(value)) %>%
+ggplot(aes(fct_rev(year), value, fill = Household, group = Household)) + geom_col(position = 'stack') + coord_flip() +
+
+  
+  labs(x = '', y = 'Children in relative poverty (% of total)', title = 'Two in three children live in households with at least one adult in work') +
+  annotate('text', x = '96/97', y = 25, label = 'Workess families', colour = 'white') +
+  annotate('text', x = '96/97', y = 75, label = 'At least one adult in work', colour = 'white') +
+  theme_minimal() +
+  theme(panel.grid = element_blank(), text = element_text(family = 'Open Sans'), legend.position = 'none') +
+  scale_fill_manual(values = c('#882D60', '#7A9F35'))
+
+work_bhc_plot
+```
+
+```{r}
+cp_households_ahc <- child_poverty_households[(24:41),]
+
+cp_households_ahc <- cp_households_ahc %>%
+  filter(!is.na(Household) & Household != 'After Housing Costs') %>%
+   gather(key = 'year', value = 'value', -Household) %>%
+  mutate(year = factor(year, ordered = TRUE, levels = c("94/95", "95/96", "96/97", "97/98", "98/99", "99/00", "00/01", "01/02", "02/03", "03/04", "04/05", "05/06", "06/07", "07/08", "08/09", "09/10", "10/11", "11/12", "12/13", "13/14", "14/15", "15/16", "16/17", '17/18') ))
+  
+
+cp_work_ahc <- cp_households_ahc %>%
+  subset(Household %in%c('At least one adult in work', 'Workless families')) 
+```
+
+```{r}
+work_ahc_plot <- cp_work_ahc %>%
+  filter(!is.na(value)) %>%
+
+ggplot(aes(year, value, fill = Household, group = Household)) + geom_col(position = 'stack') + coord_flip() +
+
+  
+  labs(x = '', y = 'Children in relative poverty (% of total)', title = 'Two in three children live in households with at least one adult in work') +
+  annotate('text', x = '17/18', y = 15, label = 'Workess families', colour = 'white') +
+  annotate('text', x = '17/18', y = 75, label = 'At least one adult in work', colour = 'white') +
+  theme_minimal() +
+  theme(panel.grid = element_blank(), text = element_text(family = 'Open Sans'), legend.position = 'none') +
+  scale_fill_manual(values = c('#882D60', '#7A9F35'))
+
+work_ahc_plot
+```
+
+```{r}
+add_hc <- function(df) {
+  df_name <- deparse(substitute(df))
+  df_new <- df %>%
+    mutate('housing_costs' = rep(unlist(strsplit(df_name, split="_"))[3], nrow(df)))
+  return (df_new)
+}
+hc_labels <- c( ahc = "After Housing Costs", bhc = "Before Housing Costs")
+cp_households_full <- rbind(add_hc(cp_work_ahc), add_hc(cp_work_bhc))
+cp_households_full_plot <- cp_households_full %>%
+  filter(!is.na(value)) %>%
+  ggplot(aes(year, value, fill = Household)) + geom_col(position = 'stack') + facet_grid(. ~ housing_costs, scales = 'free', labeller = labeller(housing_costs =hc_labels)) + coord_flip() +
+  theme_minimal() + 
+  scale_fill_manual(values = c('#882D60', '#7A9F35')) +
+  theme(panel.grid = element_blank(), legend.position = 'none', text = element_text(family = 'Gill Sans Nova')) +
+  annotate('text', x = '17/18', y = 15, label = 'Workess families', colour = 'white') +
+  annotate('text', x = '17/18', y = 75, label = 'At least one adult in work', colour = 'white') +
+  labs(x = '', y = 'Children in relative poverty (% of total)', title = 'Two in three children in relative poverty now live in a household with at least one adult in work')
+
+cp_households_full_plot
+
+cp_households_full %>%
+
+  mutate( housing_costs = recode(housing_costs, 'ahc' = 'After Housing Costs', 'bhc' = 'Before Housing Costs')) %>%
+  spread(key = 'Household', value = 'value') #%>%
+
+  
+#write.csv( 'cp_households_cat.csv', row.names = FALSE)
+```
+
+
+The bar chart above represents the composition of children living in <strong>relative poverty</strong> (i.e. living in households with < 60% of contemporary median household income) by economic status of the family. "At least one adult in work" includes all types of work (part-time, full-time, etc), families with a lone parent, couples where one adult or both are in work.
+The time series would suggest in-work poverty is having a disproportionate impact on children. Now, almost two-thirds of children live in households where at least one adult is working. 
+
+```{r}
+cp_households_wales <- read.csv('../Source/Child poverty/child_poverty_household_wales.csv', na = '', header = TRUE)
+names(cp_households_wales) <- c('remove' , 'household', 'subset', '2007/08-2009/10', '2008/09-2010/11', '2009/10-2011/12', '2010/11-2012/13', '2011/12-2013/14', '2012/13-2014/15', '2013/14-2015/16','2014/15-2016/17', '2015/16-2017/18')
+
+
+households <- c('All households', 'Working households', 'All adults in work', 'At least one adult in work', 'Workless households')
+
+cp_households_wales$household <- households
+
+cp_households_wales <- cp_households_wales %>%
+  select(-remove, -subset) %>%
+  gather(key = 'year', value = 'value', -household)
+
+ggplot(cp_households_wales, aes(year, value, col = household, group = household)) + geom_line(size = 1) +
+  theme_minimal() + 
+   scale_y_continuous(limits = c(0, NA)) +
+  theme(legend.position = 'top', legend.title = element_blank(), text = element_text(family = 'Gill Sans Nova')) +
+  labs(x = 'Year', y = 'Children in relative poverty (%)', title = '% of children in relative poverty in Wales, by household (3-year moving averages)', caption = 'Data: Statswales.\nFigures for workless households from 2014 onwards are based on a small sample (100-199 responses) and are considered low-quality')
+
+
+#write.csv(cp_households_wales, 'cp_households_wales.csv', row.names = FALSE)
+```
+
+
+\n This data is for Wales only. Though estimates for the last two years are not as reliable, they seem to show little to no improvement in child poverty, or even increases in some households (e.g. workless households)
+

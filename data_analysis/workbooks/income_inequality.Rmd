@@ -1,0 +1,117 @@
+```{r}
+library(tidyverse)
+library(janitor)
+library(dplyr)
+```
+
+Original data source: HBAI (not the latest)
+(CSV extracted from DWP ods file)
+```{r}
+q_shares <- read.csv('../Source/Inequality/quintile_share_uk.csv')
+
+glimpse(q_shares)
+
+q_shares_tidy <- q_shares %>%
+    clean_names() %>%
+  gather(key = 'year', value = 'quintile', -quintile_shares_of_total_income)
+
+q_shares_tidy <- q_shares_tidy %>%
+  mutate(quintile_shares_of_total_income = factor(quintile_shares_of_total_income, levels = c('Top 20% of the income distribution', 'Fourth quintile', 'Middle quintile', 'Second quintile', 'Bottom 20% of the income distribution'), ordered  =TRUE))
+
+
+q_shares_tidy <- q_shares_tidy %>%
+  mutate(year = parse_number(year))
+glimpse(q_shares_tidy)
+
+```
+Plot of quintiles (horizontally to see changes over time)
+```{r}
+ggplot(q_shares_tidy, aes(year, quintile, fill = quintile_shares_of_total_income)) + geom_area(position = 'fill') + theme_minimal() +
+  labs(x = NULL, y = 'Share of income', title = 'Shares of total income by quintile') +
+  scale_fill_brewer(name = 'Quintiles', type = 'seq', palette = 'Reds', labels = c('Top 20%', '2nd quintile', 'Middle quintile', '4th quintile', 'Bottom 20%')) +
+  theme(legend.position = 'bottom')
+```
+
+```{r}
+income_eth <- read.csv('../Source/Inequality/income-distribution.csv')
+
+income_eth_clean <- income_eth %>%
+  select(-Time_type, -Ethnicity_type) %>%
+  clean_names() %>%
+  filter(ethnicity != 'Unknown' & ethnicity != 'White British' & ethnicity != 'White Other') %>%
+  #mutate(value = parse_number(value)) %>%
+  mutate(income_quintile_distribution = factor(income_quintile_distribution, levels = c('Percentage of individuals in top income quintile', 'Percentage of individuals in fourth income quintile', 'Percentage of individuals in third income quintile', 'Percentage of individuals in second income quintile', 'Percentage of individuals in bottom income quintile'), ordered = TRUE)) 
+
+income_eth_1517 <- income_eth_clean %>%
+  filter(measure == 'Quintile distribution of income After Housing Costs' & time == '2014/15; 2015/16; 2016/17')
+```
+
+```{r}
+ggplot(income_eth_1517, aes(time, as.numeric(value), fill = income_quintile_distribution)) + geom_col(position= 'fill') + 
+  facet_grid(~ ethnicity) +
+  theme_minimal() +
+  scale_fill_brewer(name = 'Quintiles', type = 'seq', palette = 'Reds', labels = c('Top 20%', '2nd quintile', 'Middle quintile', '4th quintile', 'Bottom 20%')) +
+  theme(legend.position = 'bottom')
+```
+
+```{r}
+bottom_overtime <- income_eth_clean %>%
+  filter(income_quintile_distribution == 'Percentage of individuals in bottom income quintile' & measure == 'Quintile distribution of income After Housing Costs')
+```
+
+```{r}
+ggplot(bottom_overtime, aes(time, as.numeric(value), group = ethnicity, col = ethnicity)) + 
+  geom_line(size = 1) +
+  scale_y_continuous(limits = c(0, 45)) +
+  theme_minimal()
+```
+
+Source: ONS https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/incomeandwealth/datasets/householddisposableincomeandinequality
+Income sources of working households
+
+```{r}
+income_tax <- read.csv('../Source/Inequality/Income_sources_workingh.csv', skip = 2, blank.lines.skip = TRUE, strip.white = TRUE, col.names = c('del', 'Income sources', 'Bottom', 'Second', 'Middle', 'Fourth', 'Top', 'All households'), na.strings = c('.', ''))
+
+
+income_tax <- income_tax %>%
+    clean_names() %>%
+  remove_empty(c('rows', 'cols')) %>%
+  filter(!is.na(all_households)) %>%
+  filter(income_sources != 'Total')
+
+income_tax_tidy <- income_tax %>%
+  gather(key = 'quintile', value = 'value', - income_sources, - all_households) %>%
+  mutate(quintile = parse_factor(quintile, levels = NULL))
+
+disp_income <- income_tax_tidy %>%
+  filter(income_sources == 'Disposable income' | income_sources =='Gross income') %>%
+  mutate(value = as.numeric(value))
+
+disp_2 <- disp_income %>%
+  spread(quintile, value) %>%
+  mutate('top/bottom_quintile' = top / bottom)
+
+
+```
+Disposable income by quintile
+```{r}
+ggplot(disp_income, aes(income_sources, value, group = quintile, fill = quintile)) + geom_col(position = 'dodge')
+```
+
+
+```{r}
+glimpse(income_eth)
+income_eth_2 <- income_eth %>%
+  select(-Time_type, -Ethnicity_type) %>%
+  filter(!Ethnicity %in% c('White British', 'White Other', 'Unknown') ) %>%
+  spread(key = Ethnicity, value = Value ) %>%
+
+  #mutate(Time = recode(Time, '2008/09; 2009/10; 2010/11' = '2008-2011', '2009/10; 2010/11; 2011/12'= '2009-2011', '2010/11; 2011/12; 2012/13' = '2010-2012', '2011/12; 2012/13; 2013/14' = '2011-2014', '2012/13; 2013/14; 2014/15' = '2012-2015', '2013/14; 2014/15; 2015/16' = '2013-2016', '2014/15; 2015/16; 2016/17' = '2014-2017' ))
+  mutate(Time = recode(Time, '2008/09; 2009/10; 2010/11' = '2011', '2009/10; 2010/11; 2011/12'= '2012', '2010/11; 2011/12; 2012/13' = '2013', '2011/12; 2012/13; 2013/14' = '2014', '2012/13; 2013/14; 2014/15' = '2015', '2013/14; 2014/15; 2015/16' = '2016', '2014/15; 2015/16; 2016/17' = '2017' ))
+
+#for d3
+#write.table(income_eth_2, file = 'income_wide_eth.csv', sep = ',', row.names = FALSE)
+```
+
+
+

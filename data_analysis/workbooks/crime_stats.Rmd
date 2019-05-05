@@ -1,0 +1,399 @@
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+
+
+
+# mapping packages
+
+library(rgeos)
+library(maptools)
+library(rgdal)
+library(ggmap)
+library(broom)
+
+
+library(sp)
+library(leaflet)
+
+
+library(osmdata)
+```
+Source: https://data.police.uk/data/
+
+```{r}
+crime_jan <- read.csv('../Source/Crime/committed/2018-01-south-wales-street.csv', na = c('', NA))
+crime_feb <- read.csv('../Source/Crime/committed/2018-02-south-wales-street.csv', na = c('', NA))
+crime_mar <- read.csv('../Source/Crime/committed/2018-03-south-wales-street.csv',  na = c('', NA))
+crime_apr <- read.csv('../Source/Crime/committed/2018-04-south-wales-street.csv',na = c('', NA))
+crime_may <- read.csv('../Source/Crime/committed/2018-05-south-wales-street.csv', na = c('', NA))
+crime_jun <- read.csv('../Source/Crime/committed/2018-06-south-wales-street.csv', na = c('', NA))
+crime_jul <- read.csv('../Source/Crime/committed/2018-07-south-wales-street.csv', na = c('', NA))
+crime_aug <- read.csv('../Source/Crime/committed/2018-08-south-wales-street.csv', na = c('', NA))
+crime_sep <- read.csv('../Source/Crime/committed/2018-09-south-wales-street.csv', na = c('', NA))
+crime_oct <- read.csv('../Source/Crime/committed/2018-10-south-wales-street.csv', na = c('', NA))
+crime_nov <- read.csv('../Source/Crime/committed/2018-11-south-wales-street.csv', na = c('', NA))
+crime_dec <- read.csv('../Source/Crime/committed/2018-12-south-wales-street.csv', na = c('', NA))
+```
+
+```{r}
+crime_2018<- rbind(crime_jan, crime_feb, crime_mar, crime_apr, crime_may, crime_jun, crime_jul, crime_aug, crime_sep, crime_oct, crime_nov, crime_dec)
+
+crime_2018 <- crime_2018 %>%
+  clean_names()
+
+crime_cdf_2018 <- crime_2018 %>%
+  filter(grepl('Cardiff', lsoa_name))
+glimpse(crime_2018)
+
+no_dupl <- crime_cdf_2018 %>%
+  distinct(crime_id, .keep_all = TRUE) %>%
+
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n())
+
+drugs_cdf <- no_dupl %>%
+  filter(crime_type == 'Drugs')
+
+drugs_2018 <- crime_2018 %>%
+  distinct(crime_id, .keep_all = TRUE) %>%
+  filter(!grepl('Cardiff', lsoa_name)) %>%
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n()) %>%
+  filter(crime_type == 'Drugs')
+     
+```
+
+```{r}
+ggplot(drugs_cdf, aes(month, n_crimes, group = crime_type, col = 'Cardiff')) +
+  geom_line(size = .9) +
+  geom_line(data = drugs_2018, aes(month, n_crimes, group = crime_type, col = 'South Wales'), size = .9) +
+  ylim(0,NA ) + 
+  scale_color_manual(name = NULL, values = c(Cardiff = "#0072B2", 'South Wales'= "#999999")) +
+  theme_minimal() +
+  theme(legend.position = 'top', panel.grid.minor = element_blank()) + 
+  labs(y = 'Number of crimes', x = NULL, title = 'Drug-related crimes reported by South Wales police in 2018', caption = 'Data for South Wales does not include Cardiff') +
+  annotate(geom = 'text', x = '2018-11', y = 219, label = 'November: 209') +
+  annotate(geom = 'text', x = '2018-10', y = 120, label = 'October:\n143') +
+  scale_x_discrete(labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+```
+
+```{r}
+antisoc_cardiff <- crime_cdf_2018 %>%
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n()) %>%
+  filter(crime_type == 'Anti-social behaviour')
+
+
+antisoc_2018 <- crime_2018 %>%
+  filter(!grepl('Cardiff', lsoa_name)) %>%
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n()) %>%
+  filter(crime_type == 'Anti-social behaviour')
+
+
+
+```
+Anti-social behaviour reports are in line
+```{r}
+ggplot(antisoc_cardiff, aes(month, n_crimes, col = 'Cardiff', group = crime_type)) + geom_line() +
+  geom_line(data = antisoc_2018, aes(month, n_crimes, col = 'South Wales', group = crime_type)) +
+  ylim(0, NA) +
+  scale_color_manual(name = NULL, values = c(Cardiff = "#0072B2", 'South Wales'= "#999999")) +
+  theme_minimal() +
+  theme(legend.position = 'top', panel.grid.minor = element_blank()) +
+  labs(y = 'Number of crimes', x = NULL, title = 'Instances of anti-social behaviour reported in Cardiff and South Wales, 2018', caption = 'Data for South Wales does not include Cardiff')
+```
+
+```{r}
+search_jan <- read.csv('../Source/Crime/stop_search/2018-01-south-wales-stop-and-search.csv', na = c('', NA))
+search_feb <- read.csv('../Source/Crime/stop_search/2018-02-south-wales-stop-and-search.csv', na = c('', NA))
+search_mar <- read.csv('../Source/Crime/stop_search/2018-03-south-wales-stop-and-search.csv', na = c('', NA))
+search_apr <- read.csv('../Source/Crime/stop_search/2018-04-south-wales-stop-and-search.csv', na = c('', NA))
+search_may <- read.csv('../Source/Crime/stop_search/2018-05-south-wales-stop-and-search.csv', na = c('', NA))
+search_jun <- read.csv('../Source/Crime/stop_search/2018-06-south-wales-stop-and-search.csv', na = c('', NA))
+search_jul <- read.csv('../Source/Crime/stop_search/2018-07-south-wales-stop-and-search.csv', na = c('', NA))
+search_aug <- read.csv('../Source/Crime/stop_search/2018-08-south-wales-stop-and-search.csv', na = c('', NA))
+search_sep <- read.csv('../Source/Crime/stop_search/2018-09-south-wales-stop-and-search.csv', na = c('', NA))
+search_oct <- read.csv('../Source/Crime/stop_search/2018-10-south-wales-stop-and-search.csv', na = c('', NA))
+search_nov <- read.csv('../Source/Crime/stop_search/2018-11-south-wales-stop-and-search.csv', na = c('', NA))
+search_dec <- read.csv('../Source/Crime/stop_search/2018-12-south-wales-stop-and-search.csv', na = c('', NA))
+
+search_2018 <- rbind(search_jan, search_feb, search_mar, search_apr, search_may, search_jun, search_jul, search_aug, search_sep, search_oct, search_nov, search_dec)
+
+search_2018 <- search_2018 %>%
+  clean_names() 
+#   mutate(date = parse_datetime(date))
+
+#write.csv(search_2018, 'stop_search_2018.csv', row.names = FALSE)
+glimpse(search_2018)
+```
+
+```{r}
+search_types <- search_2018 %>%
+  group_by(type, outcome_linked_to_object_of_search, outcome) %>%
+  summarise(count = n()) %>%
+  mutate(count = if_else(type == "Person search", -count, count))
+
+temp <- search_types %>%
+  filter(type == 'Person search') %>%
+  arrange(desc(count))
+
+the_order <- temp$outcome
+```
+
+```{r}
+ggplot(search_types, aes(outcome, count, group = type, fill = type)) + geom_bar(stat = 'identity', width = .75) + coord_flip() +
+  scale_x_discrete(limits = the_order) +
+  scale_y_continuous(breaks = seq(-5000, 500, 50), labels = abs(seq (-5000, 500, 50))) +
+  labs(x = 'Search outcome', y = 'Count', title = 'Test') + 
+  theme_minimal() + 
+  theme(panel.grid = element_blank(), legend.position = 'top', legend.title = element_blank())
+```
+
+```{r}
+search_ethn <- search_2018 %>%
+  group_by(officer_defined_ethnicity, self_defined_ethnicity) %>%
+  summarise(count = n())
+
+ggplot(search_ethn, aes(officer_defined_ethnicity, count, group = self_defined_ethnicity, fill = self_defined_ethnicity)) + geom_col(position = 'dodge') + coord_flip() + theme(legend.position = 'top')
+```
+
+```{r}
+outcome_by_ethnicity <- search_2018 %>%
+  group_by(self_defined_ethnicity, outcome) %>%
+  summarise(count = n())
+
+View(outcome_by_ethnicity)
+```
+
+```{r}
+crime_jan17 <- read.csv('../Source/Crime/committed/2017-01-south-wales-street.csv', na = c('', NA))
+crime_feb17 <- read.csv('../Source/Crime/committed/2017-02-south-wales-street.csv', na = c('', NA))
+crime_mar17 <- read.csv('../Source/Crime/committed/2017-03-south-wales-street.csv', na = c('', NA))
+crime_apr17 <- read.csv('../Source/Crime/committed/2017-04-south-wales-street.csv', na = c('', NA))
+crime_may17 <- read.csv('../Source/Crime/committed/2017-05-south-wales-street.csv', na = c('', NA))
+crime_jun17 <- read.csv('../Source/Crime/committed/2017-06-south-wales-street.csv', na = c('', NA))
+crime_jul17 <- read.csv('../Source/Crime/committed/2017-07-south-wales-street.csv', na = c('', NA))
+crime_aug17 <- read.csv('../Source/Crime/committed/2017-08-south-wales-street.csv', na = c('', NA))
+crime_sep17 <- read.csv('../Source/Crime/committed/2017-09-south-wales-street.csv', na = c('', NA))
+crime_oct17 <- read.csv('../Source/Crime/committed/2017-10-south-wales-street.csv', na = c('', NA))
+crime_nov17 <- read.csv('../Source/Crime/committed/2017-11-south-wales-street.csv', na = c('', NA))
+crime_dec17 <- read.csv('../Source/Crime/committed/2017-12-south-wales-street.csv', na = c('', NA))
+
+
+crime_2017 <- rbind(crime_jan17, crime_feb17, crime_mar17, crime_apr17, crime_may17, crime_jun17, crime_jul17, crime_aug17, crime_sep17, crime_oct17, crime_nov17, crime_dec17)
+
+crime_2017 <- crime_2017 %>%
+  clean_names()
+```
+
+```{r}
+crime_jan16 <- read.csv('../Source/Crime/committed/2016-01-south-wales-street.csv', na = c('', NA))
+crime_feb16 <- read.csv('../Source/Crime/committed/2016-02-south-wales-street.csv', na = c('', NA))
+crime_mar16 <- read.csv('../Source/Crime/committed/2016-03-south-wales-street.csv', na = c('', NA))
+crime_apr16 <- read.csv('../Source/Crime/committed/2016-04-south-wales-street.csv', na = c('', NA))
+crime_may16 <- read.csv('../Source/Crime/committed/2016-05-south-wales-street.csv', na = c('', NA))
+crime_jun16 <- read.csv('../Source/Crime/committed/2016-06-south-wales-street.csv', na = c('', NA))
+crime_jul16 <- read.csv('../Source/Crime/committed/2016-07-south-wales-street.csv', na = c('', NA))
+crime_aug16 <- read.csv('../Source/Crime/committed/2016-08-south-wales-street.csv', na = c('', NA))
+crime_sep16 <- read.csv('../Source/Crime/committed/2016-09-south-wales-street.csv', na = c('', NA))
+crime_oct16 <- read.csv('../Source/Crime/committed/2016-10-south-wales-street.csv', na = c('', NA))
+crime_nov16 <- read.csv('../Source/Crime/committed/2016-11-south-wales-street.csv', na = c('', NA))
+crime_dec16 <- read.csv('../Source/Crime/committed/2016-12-south-wales-street.csv', na = c('', NA))
+
+crime_2016 <- rbind(crime_jan16, crime_feb16, crime_mar16, crime_apr16, crime_may16, crime_jun16, crime_jul16, crime_aug16, crime_sep16, crime_oct16, crime_nov16, crime_dec16)
+
+crime_2016 <- crime_2016 %>%
+  clean_names()
+crime_1618 <- rbind(crime_2016, crime_2017, crime_2018)
+```
+
+```{r}
+cdf_1618 <- crime_1618 %>%
+  filter(grepl('Cardiff', lsoa_name))
+
+
+drugs_cdf1618 <- cdf_1618 %>%
+  distinct(crime_id, .keep_all = TRUE) %>%
+  #filter(grepl('2017', month)) %>%
+  #mutate(month = parse_date(month, format = '%Y-%m')) %>%
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n()) %>%
+  filter(crime_type == 'Drugs')
+
+
+drugs_w1618 <- crime_1618 %>%
+  filter(!grepl('Cardiff', lsoa_name)) %>%
+  #filter(grepl('2017', month)) %>%
+  distinct(crime_id, .keep_all = TRUE) %>%
+  #mutate(month = parse_date(month, format = '%Y-%m')) %>%
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n()) %>%
+  filter(crime_type == 'Drugs')
+  
+
+
+```
+
+```{r}
+porder_cdf1618 <- cdf_1618 %>%
+  distinct(crime_id, .keep_all = TRUE) %>%
+  #filter(grepl('2017', month)) %>%
+ # mutate(month = parse_date(month, format = '%Y-%m')) %>%
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n()) %>%
+  filter(crime_type == 'Public order')
+
+
+porder_w1618 <- crime_1618 %>%
+  filter(!grepl('Cardiff', lsoa_name)) %>%
+  #filter(grepl('2017', month)) %>%
+  distinct(crime_id, .keep_all = TRUE) %>%
+ ## mutate(month = parse_date(month, format = '%Y-%m')) %>%
+  group_by(month, crime_type) %>%
+  summarise(n_crimes = n()) %>%
+  filter(crime_type == 'Public order')
+```
+
+```{r}
+ggplot(drugs_cdf1618, aes(month, n_crimes, group = crime_type)) +
+  geom_line(size = .9) + 
+  geom_line(data = drugs_w1618, aes(month, n_crimes, group = crime_type), colour = 'red')+
+  ylim(0, NA)
+```
+
+
+Drug arrests spike in November is Cardiff-specific (FOI to police)
+
+```{r}
+ggplot(drugs_cdf1618, aes(month, n_crimes, group = crime_type)) +
+  geom_line(colour= 'red') + 
+  geom_line(data = porder_cdf1618, aes(month, n_crimes, group = crime_type), colour = 'blue')
+```
+Trying to build a geography of crime (remember locations aren't always accurate)
+```{r}
+
+crime_filtered_antisoc <- crime_2018 %>%
+  filter(crime_type == 'Anti-social behaviour') %>%
+  filter(grepl('Cardiff', lsoa_name))
+glimpse(crime_filtered_antisoc)
+
+
+crime_filtered_drugs = crime_2018 %>%
+  filter(crime_type == 'Drugs') %>%
+  filter(grepl('Cardiff', lsoa_name))
+
+
+#write.csv(crime_filtered_antisoc, file = 'antisoc_plot.csv', row.names = FALSE)
+
+#colnames(crime_filtered_antisoc)[colnames(crime_filtered_antisoc)=="lsoa_code"] <- "id"
+
+# newest package (others are outdated)
+# wales_map <- readOGR('../Homelessness/Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_Great_Britain.shp')
+# 
+# 
+# proj4string(wales_map) <- CRS("+init=epsg:27700")
+# 
+# shape.wales.recoord <- spTransform(wales_map, CRS("+init=epsg:4326"))
+# 
+# # shapefile converted into dataframe, otherwise you can't plot it
+# shape_wales <- fortify(wales_map, region = 'lad17cd')
+# names <- wales_map$lad17cd # these are the names you will use as ID to merge the tables
+# glimpse(shape_wales)
+# 
+# 
+# ldn1.wgs84 <- spTransform(ldn1, CRS("+init=epsg:4326"))
+
+
+# merged data.frame: Homelessness information + coordinates
+# merged by id (area name)
+# merged <- merge(shape_wales, crime_filtered_antisoc, by = 'id', all.x = TRUE)
+# 
+# # shapes have an order - displays them correctly
+# m_order <- merged[order(merged$order), ]
+# 
+# sh_order <- shape_wales[order(shape_wales$order), ]
+# glimpse(sh_order)
+# 
+# glimpse(m_order)
+
+
+
+```
+
+```{r}
+# map <- ggplot(data = m_order, aes(x = long, y = lat, group = group)) + geom_path()
+# 
+# map + geom_polygon(aes(fill = perc_households_relieved), col = '#6d6a6a', size = .3)+
+#   labs(x = NULL, y = NULL, title = '% of households relieved from homelessness by local authority, 2017-2018') + theme_minimal() + coord_fixed() +
+#   scale_fill_gradient(name = '% Households relieved', low = '#f03b20', high = '#ffeda0') +
+#   theme(panel.grid = element_blank(), axis.text = element_blank(), plot.title = element_text(family = 'Open Sans', hjust = 0.2), legend.text = element_text(family = 'Open Sans'))
+# 
+# 
+# map1 <- ggplot(shape.wales.recoord) +
+#   geom_polygon(aes(x = long, y = lat, group = group), fill = 'grey', colour = 'white')
+# map1 + geom_point(data = crime_filtered_antisoc, aes(x = longitude, y = latitude, colour = 'red'))
+
+```
+
+```{r}
+# m <- getbb('Cardiff') %>%
+#   opq() %>%
+#   add_osm_feature('route','road')
+# 
+# 
+# roads_cardiff <- osmdata_sf(m)
+# roads_cardiff
+# 
+# osm_cardiff <- get_map(getbb('Cardiff'), maptype = 'toner-background')
+
+```
+https://dominicroye.github.io/en/2018/accessing-openstreetmap-data-with-r/
+```{r}
+# ggmap(osm_cardiff, extent = 'device') +
+#   geom_point(data = crime_filtered_antisoc, aes(x = longitude, y = latitude, colour = 'red')) +
+#   theme(legend.position = 'none')
+```
+
+Experiment with leaflet and crime data
+```{r}
+m <- leaflet(crime_filtered_drugs) %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(lng = ~longitude, lat = ~ latitude, radius = .8, color = '#F36E00', opacity = .5)
+
+
+#m
+```
+
+
+2019 data - Gen and Feb
+```{r}
+crime_jan19 <- read.csv('../Source/Crime/committed/2019-01-south-wales-street.csv', na = c('', NA)) %>%
+  clean_names()
+crime_feb19 <- read.csv('../Source/Crime/committed/2019-02-south-wales-street.csv', na = c('', NA)) %>%
+  clean_names()
+
+crime_1618 <- rbind(crime_1618, crime_jan19, crime_feb19)
+
+crime_cdf <- crime_1618 %>%
+  filter(grepl('Cardiff', lsoa_name))
+
+glimpse(crime_cdf)
+```
+
+```{r}
+
+crime_cdf %>%
+  filter(crime_type %in% c('Drugs', 'Anti-social behaviour'))%>%
+   mutate(month = parse_date(as.character(month), format = '%Y-%m')) %>%
+  group_by(month, crime_type) %>%
+  summarise(count = n()) %>%
+  ggplot(aes(month, count, group = crime_type, colour = crime_type)) + geom_line(size = 1)
+```
+
+```{r}
+```
+

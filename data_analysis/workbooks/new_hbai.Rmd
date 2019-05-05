@@ -1,0 +1,245 @@
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(readODS)
+library(zoo)
+library(bbplot)
+library(extrafont)
+library(directlabels)
+```
+Data source: HBAI
+https://www.gov.uk/government/collections/households-below-average-income-hbai--2
+```{r}
+pop_trends_hbai <- readODS::read_ods('../Source/new_hbai/population-trends-hbai-1994-95-2017-18-tables.ods', sheet = '3_2tr', skip = 9, col_names = FALSE)
+
+names(pop_trends_hbai) <- c('drop1', 'drop2', 'year', 'bhc_50', 'bhc_60', 'bhc_70', 'drop3', 'ahc_50', 'ahc_60', 'ahc_70')
+
+pop_trends_hbai <- pop_trends_hbai[(1:24),]
+
+pop_trends_hbai <- pop_trends_hbai %>%
+  select(-starts_with('drop')) %>%
+  gather(key = 'key', value = 'value', -year) %>%
+  separate(key, into = c('housing_costs', 'dist_from_median'), sep = '_')
+
+pop_60_median <- pop_trends_hbai %>%
+   mutate(housing_costs = recode(housing_costs, 'ahc' = 'After Housing Costs', 'bhc' = 'Before Housing Costs')) %>%
+  filter(dist_from_median == 60)
+
+
+# ggplot(pop_60_median, aes(year, value, colour = housing_costs, group = housing_costs)) + geom_line() +
+#   ylim(0, NA) +
+#   theme_minimal() +
+#   labs(x = NULL, y = 'People in absolute poverty (% of population)', title = '% of people in absolute poverty in the UK') +
+#   geom_dl(aes(label = housing_costs), method = list(dl.trans(x = x -4, y = y + .3), 'last.points'), colour= 'black') +
+#   theme(legend.position = 'none', plot.margin=unit(c(1,1,1.5,1.2),"cm"), text = element_text(family = 'Open Sans')) +
+#     scale_x_discrete(expand = c(0, 0)) 
+ggplot(pop_60_median, aes(year, value ,colour =housing_costs, group = housing_costs))+
+  geom_line(size = 1) +
+  ylim(0, NA) +
+  theme_minimal() +
+  labs(x = NULL, y = 'People in absolute poverty (% of population)', title = '% of people in absolute poverty in the UK') +
+geom_text(data = subset(pop_60_median, year == '2017/18'), 
+      aes(label = housing_costs,  x = '2007/08', y = value + 3.5), hjust = -.21, size = 3, colour = 'black') +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_colour_discrete(guide = 'none')  +  
+  theme(plot.margin = unit(c(1,3,1,1), "lines"), text = element_text(family = 'Gill Sans Nova'))  
+
+
+```
+
+```{r}
+pop_relp_hbai <- readODS::read_ods('../Source/new_hbai/population-trends-hbai-1994-95-2017-18-tables.ods', sheet = '3_1tr', skip = 9, col_names = FALSE)
+names(pop_relp_hbai) <- c('drop1', 'drop2', 'year', 'bhc_50', 'bhc_60', 'bhc_70', 'drop3', 'ahc_50', 'ahc_60', 'ahc_70')
+
+pop_relp_hbai <- pop_relp_hbai[(1:24),]
+
+pop_relp_hbai <- pop_relp_hbai %>%
+  select(-starts_with('drop')) %>%
+  gather(key = 'key', value = 'value', -year) %>%
+  separate(key, into = c('housing_costs', 'dist_from_median'), sep = '_')
+
+pop_relp_60_median <- pop_relp_hbai %>%
+   mutate(housing_costs = recode(housing_costs, 'ahc' = 'After Housing Costs', 'bhc' = 'Before Housing Costs')) %>%
+  filter(dist_from_median == 60)
+
+glimpse(pop_relp_hbai)
+```
+
+```{r}
+ggplot(pop_relp_60_median, aes(year, value ,colour =housing_costs, group = housing_costs))+
+  geom_line(size = 1) +
+  ylim(0, NA) +
+  theme_minimal() +
+  labs(x = NULL, y = 'People in relative poverty (% of population)', title = '% of people in relative poverty in the UK') +
+geom_text(data = subset(pop_60_median, year == '2017/18'), 
+      aes(label = housing_costs,  x = '2007/08', y = value + 3.5), hjust = -.21, size = 3, colour = 'black') +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_colour_discrete(guide = 'none')  +  
+  theme(plot.margin = unit(c(1,3,1,1), "lines"), text = element_text(family = 'Gill Sans Nova')) 
+```
+
+Historical series: UK and Wales
+Absolute poverty
+```{r}
+abs_poverty_regions <- read_ods('../Source/new_hbai/population-hbai-timeseries-1994-95-2017-18-tables.ods', sheet = '3_19ts', skip = 6, col_names = TRUE, na = c('', '..'))
+
+glimpse(abs_poverty_regions)
+
+absp_regions_bhc <- abs_poverty_regions[(4:18),(2:24)]
+names(absp_regions_bhc) <- c('Region',"94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')
+
+# colnames(relp_regions_bhc)[colnames(relp_regions_bhc)==""] <- "Region"
+
+
+absp_regions_bhc_tidy <- absp_regions_bhc %>%
+  filter(!is.na(Region)) %>%
+  gather(key = 'year', value = 'value', -Region) %>%
+  mutate(Region = recode(Region, 'All individuals (per cent)3' = 'UK'))
+
+absp_bhc_wales <- absp_regions_bhc_tidy %>%
+  filter(Region %in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')))
+
+
+absp_bhc_wales %>%
+  mutate(housing_costs = rep('Before Housing Costs', nrow(absp_bhc_wales))) -> absp_bhc_wales
+
+
+```
+
+```{r}
+absp_regions_ahc <- abs_poverty_regions[(21:35),(2:24)]
+names(absp_regions_ahc) <- c('Region',"94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')
+
+# colnames(relp_regions_bhc)[colnames(relp_regions_bhc)==""] <- "Region"
+
+
+absp_regions_ahc_tidy <- absp_regions_ahc %>%
+  filter(!is.na(Region)) %>%
+  gather(key = 'year', value = 'value', -Region) %>%
+  mutate(Region = recode(Region, 'All individuals (per cent)3' = 'UK'))
+
+absp_ahc_wales <- absp_regions_ahc_tidy %>%
+  filter(Region %in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')))
+
+absp_ahc_wales %>%
+  mutate(housing_costs = rep('After Housing Costs', nrow(absp_ahc_wales))) -> absp_ahc_wales
+
+
+absp_wales_uk <- rbind(absp_bhc_wales, absp_ahc_wales) %>%
+  mutate(value = as.numeric(value))
+
+```
+
+```{r}
+ggplot(absp_wales_uk, aes(year, value, fill = Region, group = Region)) + geom_col(position = 'dodge') +
+  theme_minimal() +
+  ylim(0, NA) +
+  facet_wrap(. ~ rev(housing_costs), ncol = 1) +
+  theme(legend.position = 'top', text = element_text(family = 'Gill Sans Nova')) +
+  labs(x = NULL, y = 'People in absolute poverty (% of population)', title = '% of people in absolute poverty in the UK and Wales (3-year moving averages)')
+  
+
+
+```
+
+```{r}
+rel_poverty_regions <- read_ods('../Source/new_hbai/population-hbai-timeseries-1994-95-2017-18-tables.ods', sheet = '3_17ts', skip = 6, col_names = TRUE, na = c('', '..'))
+
+glimpse(rel_poverty_regions)
+
+relp_regions_bhc <- rel_poverty_regions[(4:18),(2:24)]
+names(relp_regions_bhc) <- c('Region',"94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')
+
+# colnames(relp_regions_bhc)[colnames(relp_regions_bhc)==""] <- "Region"
+
+
+relp_regions_bhc_tidy <- relp_regions_bhc %>%
+  filter(!is.na(Region)) %>%
+  gather(key = 'year', value = 'value', -Region) %>%
+  mutate(Region = recode(Region, 'All individuals (per cent)3' = 'UK'))
+
+relp_bhc_wales <- relp_regions_bhc_tidy %>%
+  filter(Region %in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18'))) 
+
+relp_bhc_wales %>%
+  mutate(housing_costs = rep('Before Housing Costs', nrow(relp_bhc_wales))) -> relp_bhc_wales
+
+
+```
+
+```{r}
+
+
+relp_regions_ahc <- rel_poverty_regions[(21:35),(2:24)]
+names(relp_regions_ahc) <- c('Region',"94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18')
+
+# colnames(relp_regions_bhc)[colnames(relp_regions_bhc)==""] <- "Region"
+
+
+relp_regions_ahc_tidy <- relp_regions_ahc %>%
+  filter(!is.na(Region)) %>%
+  gather(key = 'year', value = 'value', -Region) %>%
+  mutate(Region = recode(Region, 'All individuals (per cent)3' = 'UK'))
+
+relp_ahc_wales <- relp_regions_ahc_tidy %>%
+  filter(Region %in% c('Wales', 'UK')) %>%
+  mutate(year = factor(year, ordered= TRUE, levels = c("94/95-96/97", "95/96-97/98", "96/97-98/99", "97/98-99/00", "98/99-00/01", "99/00-01/02", "00/01-02/03", "01/02-03/04", "02/03-04/05", "03/04-05/06", "04/05-06/07", "05/06-07/08", "06/07-08/09", "07/08-09/10", "08/09-10/11", "09/10-11/12", "10/11-12/13", "11/12-13/14", "12/13-14/15", "13/14-15/16", "14/15-16/17", '15/16-17/18'))) 
+
+relp_ahc_wales%>%
+  mutate(housing_costs = rep('After Housing Costs', nrow(relp_ahc_wales))) -> relp_ahc_wales
+relp_wales_uk <- rbind(relp_bhc_wales, relp_ahc_wales) %>%
+  mutate(value = as.numeric(value))
+
+#write.csv(relp_wales_uk, 'rel_poverty_wuk.csv', row.names = FALSE)
+
+
+
+```
+
+```{r}
+ggplot(relp_wales_uk, aes(year, value, fill = Region, group = Region)) + geom_col(position = 'dodge') +
+  theme_minimal() +
+  ylim(0, NA) +
+  facet_wrap(. ~ rev(housing_costs), ncol = 1) +
+  theme(legend.position = 'top', text = element_text(family = 'Gill Sans Nova')) +
+  labs(x = NULL, y = 'People in relative poverty (% of population)', title = '% of people in relative poverty in the UK and Wales (3-year moving averages)')
+
+glimpse(relp_wales_uk)
+  
+```
+Just Wales
+```{r}
+ggplot(data = subset(relp_wales_uk, Region == 'Wales'), aes(year, value, linetype = housing_costs, group = housing_costs)) + geom_line(size = 1) +
+  theme_minimal() + 
+  ylim(0, NA) +
+  labs(x = NULL, y = '% people in relative poverty', title = '% of people in relative poverty in Wales (3-year moving average)') +
+  theme(legend.position = 'top', legend.title = element_blank(), text = element_text(family = 'Gill Sans Nova'))
+```
+Absolute poverty (Wales only)
+```{r}
+ggplot(data = subset(absp_wales_uk, Region == 'Wales'), aes(year, value, linetype = housing_costs, group = housing_costs)) + geom_line(size = 1) +
+  theme_minimal() + 
+  ylim(0, NA) +
+  labs(x = NULL, y = '% people in absolute poverty', title = '% of people in absolute poverty in Wales (3-year moving average)') +
+  theme(legend.position = 'top', legend.title = element_blank(), text = element_text(family = 'Gill Sans Nova'))
+```
+
+
+Creating single file for export
+```{r}
+absp_wales_uk %>%
+  mutate(poverty_type = rep('Absolute poverty', nrow(.))) -> absp_wales_uk
+
+relp_wales_uk %>%
+  mutate(poverty_type = rep('Relative poverty', nrow(.))) -> relp_wales_uk
+
+#rbind(absp_wales_uk, relp_wales_uk) %>%
+ # write.csv('poverty_total.csv', row.names = FALSE)
+```
+  
+

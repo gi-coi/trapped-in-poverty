@@ -1,0 +1,555 @@
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(janitor)
+library(gghighlight)
+library(extrafont)
+library(zoo)
+
+
+library(rgeos)
+library(maptools)
+library(rgdal)
+library(ggmap)
+library(broom)
+
+
+library(patternplot)
+
+library(jsonlite)
+
+# importing windows fonts into R to customise charts
+# font_import()
+# loadfonts(device = "win")
+```
+Importing and cleaning StatsWales data: households relieved from homelessness
+Source: https://statswales.gov.wales/Catalogue/Housing/Homelessness/reliefofhomelessness-by-area-measure-section73
+```{r}
+relief_area <- read_csv('../Source/Homelessness/relief_homelessness_area_statswales.csv', skip = 3, col_names = c('Wales', 'id', 'n_households_owed_duty', 'rate_households_owed_duty', 'n_households_relieved', 'perc_households_relieved', 'rate_households_relieved', 'total'))
+
+relief_area <- relief_area %>%
+  select(-Wales) %>%
+  mutate(id = parse_factor(id, levels = NULL))
+
+head(relief_area)
+glimpse(relief_area)
+
+#write.csv(relief_area, 'relief_area.csv', row.names = FALSE)
+```
+
+% of households relieved from homelessness: mean and median (for plot)
+```{r}
+mean_relieved <- mean(relief_area$perc_households_relieved)
+
+median_relieved <- median(relief_area$perc_households_relieved)
+
+mean_relieved
+median_relieved
+```
+Mean and median are very close, but median is used for robustness
+```{r}
+ggplot(relief_area, aes(reorder(id, perc_households_relieved), perc_households_relieved)) + geom_col(fill = 'red') + coord_flip() +
+  gghighlight(id =='Cardiff') +
+  geom_text(data = relief_area, aes(label = trunc(perc_households_relieved), x = id, y = perc_households_relieved + 1), col = 'black', size = 3) +
+  geom_hline(yintercept = median_relieved, linetype="dotted", 
+                color = "grey50", size=1, alpha = 0.6) +
+  annotate('text', x = 'Cardiff', y = median_relieved + 4, label = 'Median') +
+  theme_minimal() +
+  labs(y = 'Percentage of households relieved', x = NULL, title = 'Percentage of households relieved from homelessness by area, 2017-2018') +
+  theme(plot.title = element_text(hjust = 3), panel.grid = element_blank()) +
+  scale_y_continuous(labels = NULL)
+ 
+```
+
+```{r}
+mean_rate_relieved <- mean(relief_area$rate_households_relieved)
+
+median_rate_relieved <- median(relief_area$rate_households_relieved)
+
+mean_rate_relieved
+
+median_rate_relieved
+
+
+```
+
+Bar chart for rates (less useful, but interesting - Cardiff has higher population than other areas)
+```{r}
+ggplot(relief_area, aes(reorder(id, rate_households_relieved), rate_households_relieved)) + geom_col(fill = 'red') + coord_flip() +
+  gghighlight(id =='Cardiff') +
+  geom_text(data = relief_area, aes(label = trunc(rate_households_relieved), x = id, y = rate_households_relieved - 2), col = 'black', size = 3) +
+  geom_hline(yintercept = median_rate_relieved, linetype="dotted", 
+                color = "grey50", size=1, alpha = 0.6) +
+  annotate('text', x = 'Ceredigion', y = median_rate_relieved + 4, label = 'Median') +
+  theme_minimal() +
+  labs(y = 'Rate of households relieved', x = NULL, title = 'Rate of households relieved from homelessness by area, 2017-2018') +
+  theme(panel.grid = element_blank()) +
+  scale_y_continuous(labels = NULL)
+
+
+```
+Wales map: shapefile manipulation
+```{r}
+
+
+# newest package (others are outdated)
+#Source: ONS Geoportal
+#https://data.gov.uk/dataset/4dc72fcd-097d-472b-bb8a-794c6105ea4b/local-authority-districts-december-2017-full-clipped-boundaries-in-great-britain
+# Code sources: https://gist.github.com/lmullen/8375785
+wales_map <- readOGR('../Source/Homelessness/Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_Great_Britain.shp')
+
+
+#map for Wales
+# shapefile converted into dataframe, otherwise you can't plot it
+shape_wales <- fortify(wales_map, region = 'lad17nm')
+names <- wales_map$lad17nm # these are the names you will use as ID to merge the tables
+glimpse(shape_wales)
+
+
+# merged data.frame: Homelessness information + coordinates
+# merged by id (area name)
+merged <- merge(shape_wales, relief_area, by = 'id', all.x = TRUE)
+
+# shapes have an order - displays them correctly
+m_order <- merged[order(merged$order), ]
+
+
+#Map for UK 
+uk_map <- readOGR('../Source/Homelessness/Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_United_Kingdom_WGS84.shp')
+
+shape_uk <- fortify(uk_map, region = 'lad17nm')
+
+nam_uk <- uk_map$lad17nm
+
+glimpse(shape_uk)
+
+
+m2 <- merge(shape_uk, relief_area, by = 'id', all.x = TRUE)
+
+mo2 <- m2[order(m2$order), ]
+
+```
+
+Mapping homelessness relief in Wales, % of households relieved
+```{r}
+map <- ggplot(data = m_order, aes(x = long, y = lat, group = group)) + geom_path()
+
+map + geom_polygon(aes(fill = perc_households_relieved), col = '#6d6a6a', size = .3)+ 
+  labs(x = NULL, y = NULL, title = '% of households relieved from homelessness by local authority, 2017-2018') + theme_minimal() + coord_fixed() +
+  scale_fill_gradient(name = '% Households relieved', low = '#f03b20', high = '#ffeda0') +
+  theme(panel.grid = element_blank(), axis.text = element_blank(), plot.title = element_text(family = 'Open Sans', hjust = 0.2), legend.text = element_text(family = 'Open Sans'))
+```
+
+Rate of households relieved
+```{r}
+map + geom_polygon(aes(fill = rate_households_relieved), col = '#6d6a6a', size = .3)+ 
+  labs(x = NULL, y = NULL, title = 'Rate of households relieved from homelessness by local authority, 2017-2018') + theme_minimal() + coord_fixed() +
+  scale_fill_gradient(name = 'Rate', low = '#f03b20', high = '#ffeda0') +
+  theme(panel.grid = element_blank(), axis.text = element_blank(), plot.title = element_text(family = 'Open Sans', hjust= 0.35), legend.text = element_text(family = 'Open Sans'))
+```
+
+Projection not ideal but does the job (also it's static, so you can't zoom in)
+```{r}
+ggplot(mo2, aes(long, lat, group = group)) + geom_path(col= 'black') +
+geom_polygon(aes(fill = rate_households_relieved), col = '#6d6a6a', size = .3)+ 
+  labs(x = NULL, y = NULL, title = 'Rate of households relieved from homelessness by local authority, 2017-2018') + theme_minimal() + coord_fixed() +
+  scale_fill_gradient(name = 'Rate', low = '#f03b20', high = '#ffeda0') +
+  theme(panel.grid = element_blank(), axis.text = element_blank(), plot.title = element_text(family = 'Open Sans', hjust= 0.35), legend.text = element_text(family = 'Open Sans'))
+
+```
+
+
+```{r}
+ggplot(relief_area, aes(reorder(id, rate_households_owed_duty), rate_households_owed_duty)) +
+  geom_col(fill = 'red') +
+  coord_flip() +
+  gghighlight(id == 'Cardiff')+
+  theme(panel.grid.major.y = element_blank(), panel.grid.major.x = element_line(colour = '#efeff3'), text = element_text(family = 'Trebuchet MS'), panel.background = element_rect(fill = 'white')) +
+  labs(x = NULL, y = 'Rate of households owed duty', title = 'Rate of households owed duty (section 73), per 10,000 households')
+```
+
+
+Source: StatsWales https://statswales.gov.wales/Catalogue/Housing/Homelessness/Statutory-Homelessness-Prevention-and-Relief/householdsforwhichassistancehasbeenprovided-by-outcome-age-gender
+```{r}
+assist_wales <- read.csv('../Source/Homelessness/assistance_provided_wales.csv', skip = 1,col.names = c('del', 'group', 'sub_group', 'male', 'female', 'total'), na.strings = c('NA', ''))
+
+glimpse(assist_wales)
+assist_wales_clean <- assist_wales %>%
+  mutate(group = na.locf(group)) %>%
+  select(-del)
+
+assist_wales_clean <- assist_wales_clean %>%
+  mutate('area' = rep('wales', nrow(assist_wales_clean)))
+```
+Section 73 is homelessness relief
+
+```{r}
+section_73 <- assist_wales_clean %>%
+  filter(grepl('73', group)) %>%
+  filter(grepl('Successfully', sub_group) | grepl('Unsuccessfully', sub_group) | is.na(sub_group)) %>%
+  mutate(prop_male = male/6315, prop_female = female/4959) %>%
+  mutate('ratio_male_female' = male / female) # Ideally, ratio in the group should be the same as ratio for successful and unsuccessful outcomes
+
+glimpse(section_73)
+
+```
+
+```{r}
+assist_cardiff <- read.csv('../Source/Homelessness/assistance_provided_cdf.csv',skip = 1,col.names = c('del', 'group', 'sub_group', 'male', 'female', 'total'), na.strings = c('NA', '', '*'))
+
+glimpse(assist_cardiff)
+```
+
+```{r}
+assist_cardiff_clean <- assist_cardiff %>%
+  mutate(group = na.locf(group)) %>%
+  select(-del)
+
+assist_cardiff_clean <- assist_cardiff_clean %>%
+  mutate('area' = rep('cardiff', nrow(assist_cardiff_clean)))
+  
+```
+
+```{r}
+section_73_cdf <- assist_cardiff_clean %>%
+  filter(grepl('73', group)) %>%
+ # filter(grepl('Successfully', sub_group) | grepl('Unsuccessfully', sub_group) | is.na(sub_group)) %>%
+  mutate(prop_male = male/1128, prop_female = female / 849) %>%
+  mutate('ratio_male_female' = male / female)
+  
+```
+
+```{r}
+section_73_compare = rbind(section_73, section_73_cdf)
+
+#write.csv(section_73_compare, 'section_73_compare.csv', row.names = FALSE)
+```
+As a rule, the overall group ratio should be close to the ratios for sub-groups (successful action, unsuccessful action).
+This is the case for the Welsh figures, but not for Cardiff. Indeed, there are slightly more men than women in the general cohort; however, the failure rate is higher amongst women.
+```{r}
+ggplot(section_73_compare, aes(sub_group, ratio_male_female, group = area, fill = area)) +
+  geom_col(position = 'dodge') +
+  scale_x_discrete(name = 'Outcome', labels = c('Successful', 'Unsuccessful', 'Group total ratio')) +
+  labs(title = 'Male to female ratio: outcomes of homelessness relief under section 73', y = 'Male/female ratio') +
+  theme_minimal() +
+  theme(panel.grid.major.x = element_blank(), panel.grid.minor.y = element_blank()) +
+  scale_fill_discrete(name = 'Area', labels = c('Cardiff', 'Wales'))
+```
+
+Section 66: homelessness prevention action
+```{r}
+section_66 <- assist_wales_clean %>%
+  filter(grepl('66', group)) %>%
+ # filter(grepl('Successful', sub_group) | grepl('Unsuccessful', sub_group) | is.na(sub_group)) %>%
+  mutate(prop_male = male / 3282, prop_female = female/5790) %>%
+  mutate('ratio_female_male' = female / male)
+
+section_66_cdf <- assist_cardiff_clean %>%
+  filter(grepl('66', group)) %>%
+ # filter(grepl('Successful', sub_group) | grepl('Unsuccessful', sub_group) | is.na(sub_group)) %>%
+  mutate(prop_male = male / 519, prop_female = female/1026) %>%
+  mutate('ratio_female_male' = female / male)
+
+section_66_compare = rbind(section_66, section_66_cdf)
+glimpse(section_66_compare)
+#write.csv(section_66_compare, 'section_66_compare.csv', row.names = FALSE)
+
+```
+
+Section 66 group: women tend to outnumber men 2:1. But the failure rate is 4:1!
+```{r}
+ggplot(section_66_compare, aes(sub_group, ratio_female_male, group = area, fill = area)) +
+  geom_col(position = 'dodge')+
+  scale_x_discrete(name = 'Outcome', labels = c('Successful', 'Unsuccessful', 'Group total ratio')) +
+  labs(title = 'Female to male ratio: outcomes of homelessness prevention under Section 66', y = 'Female/male ratio') +
+  scale_fill_discrete(name = 'Area', labels = c('Cardiff', 'Wales')) +
+  theme_minimal() +
+  theme(panel.grid.major.x = element_blank(), panel.grid.minor.y = element_blank())
+```
+
+```{r}
+View(section_66_compare)
+section_66_compare %>%
+  gather(key = 'group', value = 'prop', -group, -sub_group, -male, -female, -total, -area, -ratio_female_male) %>%
+  filter(!prop == 1 ) %>%
+  ggplot(aes(group, prop, group = area, fill = sub_group)) + geom_col(position = 'fill') + theme(legend.position = 'top') + facet_grid(.~ area)
+
+# messy chart, but pink is what matters (unsuccessful prevention) - failure rate much higher among women
+```
+
+```{r}
+section_73_compare %>%
+  gather(key = 'group', value = 'prop', -group, -sub_group, -male, -female, -total, -area, -ratio_male_female) %>%
+  filter(!prop == 1 ) %>%
+  ggplot(aes(group, prop, group = area, fill = sub_group)) + geom_col(position = 'fill') + theme(legend.position = 'top') + facet_grid(.~ area)
+```
+
+
+ONS Count of homeless deaths
+https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/bulletins/deathsofhomelesspeopleinenglandandwales/localauthorityestimates2013to2017
+```{r}
+
+colnames = c('code', 'name', 'id_2013', 'id_2014', 'id_2015', 'id_2016', 'id_2017', 'est_2013', 'est_2014', 'est_2015', 'est_2016', 'est_2017','estper100_2013', 'estper100_2014', 'estper100_2015', 'estper100_2016', 'estper100_2017', 'combined_5yrs')
+
+colclasses = c('factor', 'factor', 'integer', 'integer', 'integer', 'integer', 'integer', 'integer', 'integer', 'integer', 'integer', 'integer', 'complex', 'complex','complex', 'complex', 'complex', 'complex' )
+homeless_deaths <- read.csv('../Source/Homelessness/deaths_wales_eng.csv', skip = 1, col.names = colnames, blank.lines.skip = TRUE, na = c(''))
+
+View(homeless_deaths)
+homeless_deaths <- homeless_deaths %>%
+  filter(!(is.na(name)))
+deaths_eng_wales <- homeless_deaths %>%
+  filter(name == 'England' | name == 'Wales')
+
+
+
+
+eng_wales_wide <- deaths_eng_wales %>%
+  gather(key = 'measure', value = 'value', -code, -name) %>%
+  separate(measure, into = c('measure', 'year'), sep = '_') %>%
+  filter(year != '5yrs') %>%
+  mutate(year = parse_date(year, format = '%Y')) %>%
+  mutate(measure = parse_factor(measure, levels = NULL)) %>%
+  mutate(measure = recode(measure, id = 'identified', est = 'estimated', estper100 = 'estimated_per_100thousand')) %>%
+  spread(key = 'measure', value = 'value') %>%
+  mutate(total = identified + estimated)
+
+
+deaths_wales_tidy <- eng_wales_wide %>%
+  gather(key = 'measure', value = 'value', -code, -name, -year) %>%
+  filter(measure %in% c('identified', 'total') & name == 'Wales') %>%
+  mutate(measure = parse_factor(measure, levels = c('total', 'identified'), ordered = TRUE))
+
+
+wales_wide <- eng_wales_wide %>%
+  filter(name== 'Wales')
+
+
+```
+
+```{r}
+ggplot(deaths_wales_tidy, aes(year, value, fill = measure)) +
+  geom_area(position = 'stack', alpha = .7, show.legend = FALSE) +
+  theme_minimal() +
+  theme(panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(), panel.grid.minor.y = element_blank(), panel.grid.major.y = element_line(color = '#f2f2f2'), text = element_text(family = 'Open Sans'), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), size = 18), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.position=c(.3,1), legend.justification=c(1,1), legend.direction = 'horizontal', legend.text = element_text(size = 14), axis.text = element_text(size = 14), legend.margin = margin(10, 6, 10, 6)) +
+  labs(x = NULL, y = 'Number of deaths', title = 'Number of homeless deaths (recorded and estimated) in Wales, 2013-2017') +
+  scale_fill_manual(values = c('#FF7C7C', '#D30909'), labels = c('Estimated', 'Identified'), name = '')
+```
+
+```{r}
+
+ggsave('deaths.png', width = 14, height = 7)
+d_wales_wimd <- read.csv('../Source/Homelessness/deaths_wales_wimd.csv')
+
+d_wales_wimd <- d_wales_wimd %>%
+  clean_names() %>%
+  mutate(wimd_decile_2014 = factor(wimd_decile_2014, levels = c('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'),ordered = TRUE))
+
+ggplot(d_wales_wimd, aes(wimd_decile_2014, identified_deaths, fill = wimd_decile_2014)) + geom_col(show.legend = FALSE) +
+  scale_fill_brewer(name = 'WIMD Decile', type = 'seq', palette = 'Reds', direction = -1) +
+  theme_minimal() +
+  theme(panel.grid.major.x = element_blank(), panel.grid.major.y = element_line(color = '#f2f2f2'), text = element_text(family = 'Open Sans', size = 18), axis.title.y = element_text(margin = margin(t = 0, r = 18, b = 0, l = 0), size = 15), plot.title = element_text(size = 20), axis.text = element_text(size = 10), panel.grid.minor.y = element_blank(), axis.title.x = element_text(margin = margin(t = 18, r = 0, b = 10, l = 0), size = 15)) +
+  labs(x = 'WIMD Decile', y = 'Identified deaths', title = 'Number of identified homeless deaths in Wales by WIMD 2014 Decile')
+
+ggsave('deaths_decile.png', width = 14, height = 7)
+
+```
+
+StatsWales (people housed from waiting list/priority) 
+
+```{r}
+household_data <- fromJSON('http://open.statswales.gov.wales/en-gb/dataset/hous1501', flatten = FALSE)
+
+household.2 <- fromJSON(household_data$odata.nextLink, flatten = FALSE)
+
+
+household.3 <- fromJSON(toString(household.2$odata.nextLink),  flatten = FALSE)
+
+household.4 <- fromJSON(household.3$odata.nextLink, flatten = FALSE)
+
+household.5 <- fromJSON(household.4$odata.nextLink, flatten = FALSE)
+
+household.6 <- fromJSON(household.5$odata.nextLink, flatten = FALSE)
+
+
+household.7 <- fromJSON(household.6$odata.nextLink, flatten = FALSE)
+household.8 <- fromJSON(household.7$odata.nextLink, flatten = FALSE)
+household.9 <- fromJSON(household.8$odata.nextLink, flatten = FALSE)
+household.10 <-fromJSON(household.9$odata.nextLink, flatten = FALSE)
+household.11 <- fromJSON(household.10$odata.nextLink, flatten = FALSE)
+household.12 <- fromJSON(household.11$odata.nextLink, flatten = FALSE)
+household.13<- fromJSON(household.12$odata.nextLink, flatten = FALSE)
+household.14 <- fromJSON(household.13$odata.nextLink, flatten = FALSE)
+household.15 <- fromJSON(household.14$odata.nextLink, flatten = FALSE)
+household.16 <- fromJSON(household.15$odata.nextLink, flatten = FALSE)
+household.17 <- fromJSON(household.16$odata.nextLink, flatten = FALSE)
+household.18 <- fromJSON(household.17$odata.nextLink, flatten = FALSE)
+household.19 <- fromJSON(household.18$odata.nextLink, flatten = FALSE)
+household.20 <- fromJSON(household.19$odata.nextLink, flatten = FALSE)
+household.21 <- fromJSON(household.20$odata.nextLink, flatten = FALSE)
+household.22 <- fromJSON(household.21$odata.nextLink, flatten = FALSE)
+household.23 <- fromJSON(household.22$odata.nextLink, flatten = FALSE)
+household.24 <- fromJSON(household.23$odata.nextLink, flatten = FALSE)
+household.25 <- fromJSON(household.24$odata.nextLink, flatten = FALSE)
+household.26 <- fromJSON(household.25$odata.nextLink, flatten = FALSE)
+household.27 <- fromJSON(household.26$odata.nextLink, flatten = FALSE)
+household.28 <- fromJSON(household.27$odata.nextLink, flatten = FALSE)
+household.29 <- fromJSON(household.28$odata.nextLink, flatten = FALSE)
+household.30 <- fromJSON(household.29$odata.nextLink, flatten = FALSE)
+household.31 <- fromJSON(household.30$odata.nextLink, flatten = FALSE)
+household.32 <- fromJSON(household.31$odata.nextLink, flatten = FALSE)
+household.33 <- fromJSON(household.32$odata.nextLink, flatten = FALSE)
+household.34 <- fromJSON(household.33$odata.nextLink, flatten = FALSE)
+household.35 <- fromJSON(household.34$odata.nextLink, flatten = FALSE)
+household.36 <- fromJSON(household.35$odata.nextLink, flatten = FALSE)
+household.37 <- fromJSON(household.36$odata.nextLink, flatten = FALSE)
+
+
+dfnames <- list()
+for (i in 1:37) {
+  dfname <- paste0('household.', i,'$value')
+  dfnames <- c(dfnames, dfname)
+ 
+}
+
+social.housing <- data.frame()
+social.housing <- rbind(household_data$value, household.2$value, household.3$value,  household.4$value, household.5$value, household.6$value, household.7$value, household.8$value, household.9$value, household.10$value, household.11$value, household.12$value, household.13$value, household.14$value, household.15$value, household.16$value, household.17$value, household.18$value, household.19$value, household.20$value, household.21$value, household.22$value, household.23$value, household.24$value, household.25$value, household.26$value, household.27$value, household.28$value, household.29$value, household.30$value, household.31$value, household.32$value, household.33$value, household.34$value, household.35$value, household.36$value, household.37$value )
+
+social.housing %>%
+  filter(Lettings_ItemName_ENG %in% c('Housed from waiting list', 'Re-housed on a priority basis due to homelessness') & Provider_ItemName_ENG == 'Wales' & Area_ItemName_ENG == 'Wales') %>%
+  group_by(Year_ItemName_ENG, Lettings_ItemName_ENG) %>%
+  ggplot(aes(Year_ItemName_ENG,Data, group = Lettings_ItemName_ENG, fill = Lettings_ItemName_ENG )) + geom_area() +
+  theme(legend.position = 'top')
+
+```
+
+<h2>Households found to be eligible, homeless subject to duty to help to secure during the year. Main reason for loss of last settled home by type of household (Section 73)</h2>
+```{r}
+house.loss <- fromJSON('http://open.statswales.gov.wales/en-gb/dataset/hous0431', flatten = FALSE)
+
+house.loss.2 <- fromJSON(house.loss$odata.nextLink, flatten = FALSE)
+house.loss.3 <- fromJSON(house.loss.2$odata.nextLink, flatten = FALSE)
+house.loss.4 <- fromJSON(house.loss.3$odata.nextLink, flatten = FALSE)
+house.loss.5 <- fromJSON(house.loss.4$odata.nextLink, flatten = FALSE)
+house.loss.6 <- fromJSON(house.loss.5$odata.nextLink, flatten = FALSE)
+house.loss.7 <- fromJSON(house.loss.6$odata.nextLink, flatten = FALSE)
+house.loss.8 <- fromJSON(house.loss.7$odata.nextLink, flatten = FALSE)
+house.loss.9 <- fromJSON(house.loss.8$odata.nextLink, flatten = FALSE)
+house.loss.10 <- fromJSON(house.loss.9$odata.nextLink, flatten = FALSE)
+house.loss.11 <- fromJSON(house.loss.10$odata.nextLink, flatten = FALSE)
+house.loss.12 <- fromJSON(house.loss.11$odata.nextLink, flatten = FALSE)
+house.loss.13 <- fromJSON(house.loss.12$odata.nextLink, flatten = FALSE)
+house.loss.14 <- fromJSON(house.loss.13$odata.nextLink, flatten = FALSE)
+house.loss.15 <- fromJSON(house.loss.14$odata.nextLink, flatten = FALSE)
+house.loss.16 <- fromJSON(house.loss.15$odata.nextLink, flatten = FALSE)
+
+house.total <- rbind(house.loss$value, house.loss.2$value, house.loss.3$value, house.loss.4$value, house.loss.5$value,house.loss.6$value, house.loss.7$value, house.loss.8$value, house.loss.9$value, house.loss.10$value, house.loss.11$value, house.loss.12$value, house.loss.13$value, house.loss.14$value, house.loss.15$value, house.loss.16$value) %>%
+  separate(Year_ItemName_ENG, into = 'year', sep = ' ' )
+
+house.total %>%
+  filter(Area_ItemName_ENG %in% c('Cardiff', 'Wales') & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Household_ItemName_ENG) %>%
+  filter(Household_ItemName_ENG %in% c('Couple with dependent children', 'Single parent household with dependent children, Total', 'Single person household, Total', 'All other household groups')) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, colour = Household_ItemName_ENG, group = Household_ItemName_ENG)) + geom_line(size = 1) + 
+  theme_minimal() +
+  facet_wrap(. ~ Area_ItemName_ENG, scales = 'free') +
+  theme(legend.position = 'top')
+```
+
+Households with dependent children as a proportion of total - slight increase in Wales, decrease in Cardiff
+
+```{r}
+house.total %>%
+  filter(Area_ItemName_ENG %in% c('Cardiff', 'Wales') & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Household_ItemName_ENG) %>%
+  filter(Household_ItemName_ENG %in% c('Households with dependent children', 'Single person household, Total')) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, fill = Household_ItemName_ENG, group = Household_ItemName_ENG)) + geom_col(position = 'fill') +
+  theme_minimal() +
+  theme(legend.position = 'top') +
+  facet_wrap(. ~ Area_ItemName_ENG)
+```
+
+
+This is to visualise the growth in numbers.
+```{r}
+house.total %>%
+  filter(Area_ItemName_ENG %in% c('Cardiff', 'Wales') & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Household_ItemName_ENG) %>%
+  filter(Household_ItemName_ENG %in% c('Households with dependent children', 'Single person household, Total')) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, fill = Household_ItemName_ENG, group = Household_ItemName_ENG)) + geom_col(position = 'fill') +
+  theme_minimal() +
+  theme(legend.position = 'top') +
+  facet_wrap(. ~ Area_ItemName_ENG)
+```
+
+
+Lone parents - significant growth in 2016-2017, especially in Wales
+```{r}
+house.total %>%
+  filter(Area_ItemName_ENG %in% c('Cardiff', 'Wales') & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Household_ItemName_ENG) %>%
+  filter(Household_ItemName_ENG %in% c('Single parent household with dependent children, Male applicant', 'Single parent household with dependent children, Female applicant')) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, fill = Household_ItemName_ENG)) + geom_col(position = 'stack') +
+  theme_minimal() +
+  theme(legend.position = 'top') +
+  facet_wrap(. ~ Area_ItemName_ENG)
+```
+
+
+Very concerning situation in Wales
+```{r}
+house.total %>%
+  filter(Area_ItemName_ENG %in% c('Cardiff', 'Wales') & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Household_ItemName_ENG) %>%
+  filter(Household_ItemName_ENG %in% c('Households with dependent children', 'Single person household, Total')) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, fill = Household_ItemName_ENG, group = Household_ItemName_ENG)) + geom_col(position = 'stack') +
+  theme_minimal() +
+  theme(legend.position = 'top') +
+  facet_wrap(. ~ Area_ItemName_ENG)
+```
+
+
+Single person households - numbers are concerning
+```{r}
+house.total %>%
+  filter(Area_ItemName_ENG %in% c('Cardiff', 'Wales') & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Household_ItemName_ENG) %>%
+  filter(Household_ItemName_ENG %in% c('Single person household, Male applicant', 'Single person household, Female applicant')) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, fill = Household_ItemName_ENG)) + geom_col(position = 'stack') +
+  theme_minimal() +
+  theme(legend.position = 'top') +
+  facet_wrap(. ~ Area_ItemName_ENG)
+```
+
+
+The proportion of women has remained constant in Cardiff, slightly increased in Wales
+```{r}
+house.total %>%
+  filter(Area_ItemName_ENG %in% c('Cardiff', 'Wales') & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Household_ItemName_ENG) %>%
+  filter(Household_ItemName_ENG %in% c('Single person household, Male applicant', 'Single person household, Female applicant')) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, fill = Household_ItemName_ENG)) + geom_col(position = 'fill') +
+  theme_minimal() +
+  theme(legend.position = 'top') +
+  facet_wrap(. ~ Area_ItemName_ENG)
+```
+
+
+Reasons for loss of household
+```{r}
+house.total %>%
+  filter(Area_ItemName_ENG ==  'Wales' & Data > 0) %>%
+  group_by(Area_ItemName_ENG, year, Reason_ItemName_ENG) %>%
+  filter(Reason_ItemName_ENG %in% c('Parent no longer willing or able to accommodate', 'Other relatives or friends no longer willing or able to accommodate',  'Breakdown of relationship with partner, Total', 'Mortgage arrears (repossession or other loss of home)', 'Rent arrears, total', 'Loss of rented or tied accommodation', 'Current property unaffordable') ) %>%
+  summarise(total = sum(Data)) %>%
+  ggplot(aes(year, total, fill = Reason_ItemName_ENG, group = Reason_ItemName_ENG)) + geom_area(position = 'stack') +
+  theme_minimal() +
+  theme(legend.position = 'top')# +facet_wrap(. ~ Area_ItemName_ENG)
+```
+
