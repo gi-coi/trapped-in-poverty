@@ -8,7 +8,7 @@ body * {
    
 }
 
-p, li, a, table {
+p, li, a, table, figcaption {
     font-family: 'Open Sans', Helvetica, sans-serif;
 }
 
@@ -81,7 +81,7 @@ p.source {
 
 
 
-[class *= "pure-u"] p, [class *= "pure-u"] li {
+[class *= "pure-u"] p, [class *= "pure-u"] li, [class *= "pure-u"] figcaption {
     color: #3a3838;
 }
 
@@ -94,6 +94,15 @@ p.source {
 
 [class *= 'pure-u'] a:hover {
     color: #ef7b6f;
+}
+
+
+.imgCaption {
+    font-size: .9em;
+    color: #3a3838;
+    line-height: 1em;
+    padding-bottom: 1em;
+
 }
 /*
 Add transition to containers so they can push in and out.
