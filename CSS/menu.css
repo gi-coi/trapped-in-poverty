@@ -8,10 +8,6 @@ body * {
 }
 
 
-.interlude {
-    padding: 2.5em 0;
-    line-height: 2.5em;
-}
 
 .pure-img-responsive {
     max-width: 100%;
@@ -19,21 +15,12 @@ body * {
 }
 
 
-.bio {
-    padding-left: 1em;
-}
-
-a.sublink {
-    white-space: normal;
-    padding-right: .1em;
-}
-
-
+/*Tooltip for charts*/
 div.tooltip {   
     position: absolute;           
     text-align: center;           
-    width: 60px;                  
-    height: 40px;                 
+    min-width: 60px;                  
+    min-height: 40px;                 
     padding: 2px;             
     font: 16px sans-serif;        
     background: white;   
@@ -43,6 +30,8 @@ div.tooltip {
   }
 
 
+
+  /*Profile page*/
 section.profile {
     padding: 2em;
     background-color: aliceblue;
@@ -57,6 +46,9 @@ section.profile iframe {
     align-self: center;
 }
 
+
+
+/* Paragraph style*/
 .insert {
     padding: 1em 2em;
     background: aliceblue;
@@ -67,10 +59,20 @@ section.profile iframe {
    
 }
 
+
+.interlude {
+    padding: 2.5em 0;
+    line-height: 2.5em;
+}
+
 p.source {
     font-size: .7em;
     text-align: right;
     color: #8e8e8e;
+}
+
+.bio {
+    padding-left: 1em;
 }
 
 
@@ -117,6 +119,31 @@ This is the parent `<div>` that contains the menu and the content area.
     #layout.active .menu-link {
         left: 150px;
     }
+
+
+   
+
+#payMap {
+    overflow: scroll;
+    margin: 0px;
+    padding: 0px;
+    height: 80vh;
+    width: 100%;
+    background-color: #eeeeee;
+    position: relative;
+    font-family: 'Open Sans', sans-serif;
+}
+.area {
+    stroke: #000;
+    stroke-width: .1px;
+}
+
+
+
+#payMap .active {
+opacity: .5;
+stroke-width: .5px;
+} 
 /*
 The content `<div>` is where all your content goes.
 */
@@ -235,6 +262,13 @@ appears on the left side of the page.
         font-size: 110%;
         color: #fff;
         margin: 0;
+    }
+
+
+    /* additional menu styling*/
+    a.sublink {
+        white-space: normal;
+        padding-right: .1em;
     }
 
 /* -- Dynamic Button For Responsive Menu -------------------------------------*/
