@@ -91,7 +91,6 @@
     var stacked = stack(filteredData);
 
 
-    console.log(stacked)
 
 
 
@@ -166,6 +165,15 @@ groups
 .attr('dy', function(d) {return yScale(d.yPos) - 4} )
 .style('font', '16px courier')
 
+// caption for data source
+d3.select('#stackedBar')
+.append('p')
+.attr('class', 'source')
+.html('Source: Department of Work and Pensions, ')
+.append('a')
+.attr('href', 'https://www.gov.uk/government/collections/households-below-average-income-hbai--2')
+.attr('target', '_blank')
+.text('HBAI');
 
 
 

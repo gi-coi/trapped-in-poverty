@@ -284,7 +284,6 @@
 
         relax(nested);
 
-        console.log(nested);
 
         var group = svg.selectAll('.lineGroup')
             .data(nested, function (d) {
@@ -352,8 +351,7 @@
 
         new_marker.merge(marker)
             .attr("x1", function (d) {
-                console.log(d.value.labelY);
-                console.log(d.labelY)
+               
                 return xScale(d.value.labelX);
             })
             .attr("y1", function (d) {
