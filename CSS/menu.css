@@ -5,9 +5,12 @@ body {
 
 body * {
     letter-spacing: initial;
+   
 }
 
-
+p, li, a, table {
+    font-family: 'Open Sans', Helvetica, sans-serif;
+}
 
 .pure-img-responsive {
     max-width: 100%;
@@ -44,6 +47,7 @@ div.profile {
 
 section.profile iframe {
     align-self: center;
+    float:left;
 }
 
 
@@ -77,7 +81,7 @@ p.source {
 
 
 
-[class *= "pure-u"] p {
+[class *= "pure-u"] p, [class *= "pure-u"] li {
     color: #3a3838;
 }
 
@@ -85,6 +89,7 @@ p.source {
     color: #ff4b39;
     font-weight: 600;
 }
+
 
 
 [class *= 'pure-u'] a:hover {
@@ -120,8 +125,29 @@ This is the parent `<div>` that contains the menu and the content area.
         left: 150px;
     }
 
+/* Stories table*/
 
+.profile table {
+    justify-self: center;
+    align-self: center;
+    width: 35%;
+    margin-left: 2em;
+    font-size: 1.4em;
+}
+
+
+
+
+
+.profile table tr {
+    height: 2.3em;
+    color: #3a3838;
+}
    
+
+.profile table tr td:first-child {
+    font-weight: bold;
+}
 
 #payMap {
     overflow: scroll;
