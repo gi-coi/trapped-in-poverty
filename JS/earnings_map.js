@@ -307,7 +307,7 @@ function clicked(d) {
                .projection(projection);
 
 d3.queue()
-.defer(d3.json, "uk.json")
+.defer(d3.json, "map/uk.json")
 .defer(d3.csv, 'csv/pay_week.csv')
 .await(function (error, boundary_data, p_data) {
 
