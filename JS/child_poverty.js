@@ -3,7 +3,7 @@
     // basic dimensions
     var width = 850;
     var height = 600;
-    var margin = { top: 30, right: 100, bottom: 30, left: 30 };
+    var margin = { top: 30, right: 100, bottom: 50, left: 40 };
 
 
     // FIRST CHART
@@ -149,6 +149,25 @@
                 .attr("class", "y axis")
                 .call(d3.axisLeft(yScale));
 
+
+                svg.append("text")             
+                .attr("transform",
+                      "translate(" + (width / 2 - margin.left) + " ," + 
+                                     (height - margin.bottom + 3) + ")")
+                .style("text-anchor", "middle")
+                .attr('class', 'x axisLabel')
+                .text("Year");
+   
+   
+                svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x",0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .attr('class', 'y axisLabel')
+                .text("% of households");
+
 // caption for data source
                 d3.select('#childVis')
                 .append('p')
@@ -201,6 +220,25 @@
             svg2.append("g")
                 .attr("class", "y axis")
                 .call(d3.axisLeft(yScaleW));
+
+
+                svg2.append("text")             
+                .attr("transform",
+                      "translate(" + (width / 2 - margin.left) + " ," + 
+                                     (height - margin.bottom + 3) + ")")
+                .style("text-anchor", "middle")
+                .attr('class', 'x axisLabel')
+                .text("Year");
+   
+   
+                svg2.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x",0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .attr('class', 'y axisLabel')
+                .text("% of households");
 
 
 

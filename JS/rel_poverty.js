@@ -2,7 +2,7 @@
 (function  () { // basic dimensions
  var width = 850;
  var height = 600;
- var margin = { top: 30, right: 100, bottom: 30, left: 30 };
+ var margin = { top: 30, right: 100, bottom: 50, left: 40 };
 
  // line generator
  var lineGen = d3
@@ -92,6 +92,26 @@ focus.append("text")
          svg.append("g")
              .attr("class", "y axis")
              .call(d3.axisLeft(yScale));
+
+
+         svg.append("text")             
+             .attr("transform",
+                   "translate(" + (width / 2 - margin.left) + " ," + 
+                                  (height - margin.bottom + 3) + ")")
+             .style("text-anchor", "middle")
+             .attr('class', 'x axisLabel')
+             .text("Year");
+
+
+             svg.append("text")
+             .attr("transform", "rotate(-90)")
+             .attr("y", 0 - margin.left)
+             .attr("x",0 - (height / 2))
+             .attr("dy", "1em")
+             .style("text-anchor", "middle")
+             .attr('class', 'y axisLabel')
+             .text("% of households");
+       
 
          // event listener to toggle housing costs
          document.getElementById("housing_costs").addEventListener("change", function() {
@@ -261,6 +281,9 @@ marker.exit().remove();
         .transition()
         .duration(1000)
         .call(d3.axisLeft(yScale));
+
+
+    
 
 
 

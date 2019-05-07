@@ -14,7 +14,7 @@
     var width = 800;
     var height = 600;
 
-    var margin = {top: 20, bottom: 30, left: 60, right: 20}
+    var margin = {top: 20, bottom: 40, left: 60, right: 20}
     var svg = d3.select('#stackedBar')
     .append('svg')
     .attr('width', width)
@@ -55,6 +55,26 @@
         svg.append('g')
         .attr('class', 'y axis')
         .call(d3.axisLeft(yScale));
+
+
+        svg.append("text")             
+        .attr("transform",
+              "translate(" + (width / 2 ) + " ," + 
+                             (height + margin.bottom - 2) + ")")
+        .style("text-anchor", "middle")
+        .attr('class', 'x axisLabel')
+        .text("% of households in poverty");
+
+
+        svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .attr('class', 'y axisLabel')
+        .text("Year");
+
 
 
         document.getElementById("housing_costs").addEventListener("change", function () {
