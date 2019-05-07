@@ -123,7 +123,7 @@
 
     // colour scale
     var colours = d3.scaleOrdinal()
-    .range(["#7f64b9", "#9f9244"]);
+    .range(['#882D60', '#7A9F35']);
 
 
 
@@ -148,7 +148,7 @@
             svg.append("g")
                 .attr("class", "y axis")
                 .call(d3.axisLeft(yScale));
-
+// axis labels
 
                 svg.append("text")             
                 .attr("transform",
@@ -179,13 +179,13 @@
                 .text('HBAI');
 
             // event listener to toggle housing costs
-            document.getElementById("housing_costs").addEventListener("change", function () {
+            document.getElementById("housing_costs_child").addEventListener("change", function () {
                 var filteredData = filterData(poverty_data);
                 return update(filteredData);
             });
 
 
-            document.getElementById('poverty_type').addEventListener('change', function () {
+            document.getElementById('poverty_type_child').addEventListener('change', function () {
                 var filteredData = filterData(poverty_data);
 
                 return update(filteredData);
@@ -197,7 +197,7 @@
     );
 
 
-
+// data on child poverty in Welsh households
     d3.csv(
         'csv/cp_households_wales.csv',
         function (d) {
@@ -304,7 +304,7 @@
         );
 
 
-        // attempt at multiple nesting? 
+        // multiple nesting - rollup to add ID (makes chart update easier) and values for label positioning
         var nested = d3.nest()
             .key(function (d) { return d.Region })
             .rollup(function (leaves) {
@@ -319,10 +319,10 @@
             })
             .entries(filteredData);
 
-
+// if overlapping labels
         relax(nested);
 
-
+            console.log(nested)
         var group = svg.selectAll('.lineGroup')
             .data(nested, function (d) {
 
@@ -490,9 +490,9 @@
 
     var filterData = function (data) {
 
-        var HCselector = document.getElementById("housing_costs");
+        var HCselector = document.getElementById("housing_costs_child");
         var housing_costs = HCselector.options[HCselector.selectedIndex].value;
-        var Pselector = document.getElementById('poverty_type');
+        var Pselector = document.getElementById('poverty_type_child');
         var poverty_type = Pselector.options[Pselector.selectedIndex].value;
 
         var filteredData = data.filter(function (d) {

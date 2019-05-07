@@ -1,4 +1,4 @@
-
+// code base for tooltip and line labels: https://bl.ocks.org/martinjc/980a2fcdbf0653c301dc2fb52750b0d9
 (function  () { // basic dimensions
  var width = 850;
  var height = 600;
@@ -37,7 +37,7 @@
 
  // colour scale
  var colours = d3.scaleOrdinal()
- .range(["#7f64b9","#9f9244"]);
+ .range(['#882D60', '#7A9F35']);
 
  // axis scales
  var xScale = d3.scaleBand().rangeRound([0, width - margin.left - margin.right]);
@@ -50,6 +50,7 @@
      .attr("width", width)
      .append("g")
      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
+     
      
 
  // linegroups is just a group to hold the lines, it never needs to change, so lets declare it here
@@ -92,7 +93,7 @@ focus.append("text")
          svg.append("g")
              .attr("class", "y axis")
              .call(d3.axisLeft(yScale));
-
+// axis labels
 
          svg.append("text")             
              .attr("transform",
@@ -111,6 +112,18 @@ focus.append("text")
              .style("text-anchor", "middle")
              .attr('class', 'y axisLabel')
              .text("% of households");
+
+                  // caption for data source
+        
+        d3.select('#povertyVis')
+        .append('p')
+        .attr('class', 'source')
+        .html('Source: Department of Work and Pensions, ')
+        .append('a')
+        .attr('href', 'https://www.gov.uk/government/collections/households-below-average-income-hbai--2')
+        .attr('target', '_blank')
+        .text('HBAI');
+
        
 
          // event listener to toggle housing costs
@@ -127,17 +140,7 @@ focus.append("text")
         })
 
         
-        // caption for data source
-        
-        d3.select('#povertyVis')
-        .append('p')
-        .attr('class', 'source')
-        .html('Source: Department of Work and Pensions, ')
-        .append('a')
-        .attr('href', 'https://www.gov.uk/government/collections/households-below-average-income-hbai--2')
-        .attr('target', '_blank')
-        .text('HBAI');
-
+   
      }
  );
 
@@ -333,11 +336,14 @@ marker.exit().remove();
 
 }
 
- // filter data
+
+
+
  
 
  var filterData = function (data) {
-
+      // filter data using dropdown menus
+      // the same filter is used for all the charts on the page
     var HCselector = document.getElementById("housing_costs");
     var housing_costs = HCselector.options[HCselector.selectedIndex].value;
     var Pselector = document.getElementById('poverty_type');
@@ -353,32 +359,7 @@ marker.exit().remove();
 
 
 
- function responsivefy(svg) {
-    // get container + svg aspect ratio
-    var container = d3.select(svg.node().parentNode),
-        width = parseInt(svg.style("width")),
-        height = parseInt(svg.style("height")),
-        aspect = width / height;
-
-    // add viewBox and preserveAspectRatio properties,
-    // and call resize so that svg resizes on inital page load
-    svg.attr("viewBox", "0 0 " + width + " " + height)
-        .attr("preserveAspectRatio", "xMinYMid")
-        .call(resize);
-
-    // to register multiple listeners for same event type,
-    // you need to add namespace, i.e., 'click.foo'
-    // necessary if you call invoke this function for multiple svgs
-    // api docs: https://github.com/mbostock/d3/wiki/Selections#on
-    d3.select(window).on("resize." + container.attr("id"), resize);
-
-    // get width of container and resize svg to fit it
-    function resize() {
-        var targetWidth = parseInt(container.style("width"));
-        svg.attr("width", targetWidth);
-        svg.attr("height", Math.round(targetWidth / aspect));
-    }
-}
+// Martin's blocks (referenced previously)
 
 function relax(data) {
     var spacing = 16;

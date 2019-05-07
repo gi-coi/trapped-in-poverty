@@ -2,10 +2,8 @@ body {
     color: #777;
 }
 
-
 body * {
     letter-spacing: initial;
-   
 }
 
 p, li, a, table, figcaption, .axisLabel {
@@ -17,42 +15,45 @@ p, li, a, table, figcaption, .axisLabel {
     height: auto;
 }
 
-
 /*Tooltip for charts*/
-div.tooltip {   
-    position: absolute;           
-    text-align: center;           
-    min-width: 60px;                  
-    min-height: 40px;                 
-    padding: 2px;             
-    font: 16px sans-serif;        
-    background: white;   
-    border: 0px;      
-    border-radius: 8px;           
-    pointer-events: none;         
-  }
 
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    min-width: 60px;
+    min-height: 40px;
+    padding: 2px;
+    font: 16px sans-serif;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
 
+/*Profile page*/
 
-  /*Profile page*/
 section.profile {
     padding: 2em;
     background-color: aliceblue;
 }
+
 div.profile {
     display: flex;
     justify-content: center;
-
 }
 
 section.profile iframe {
     align-self: center;
-    float:left;
+    float: left;
 }
 
+/*
+Customisation of template, create more space in paragraphs, customise colours
 
+Also specific styles for some paragraphs (e.g. sources and chart titles, bio sections)*/
 
 /* Paragraph style*/
+
 .insert {
     padding: 1em 2em;
     background: aliceblue;
@@ -60,12 +61,10 @@ section.profile iframe {
     border-bottom: 5px #777879 solid;
     line-height: 1.5em;
     font-size: .95em;
-   
 }
 
-
 .interlude {
-    padding: 2.5em 0;
+    padding: 1.5em 0;
     line-height: 2.5em;
 }
 
@@ -79,60 +78,25 @@ p.source {
     padding-left: 1em;
 }
 
-
-
-[class *= "pure-u"] p, [class *= "pure-u"] li, [class *= "pure-u"] figcaption {
+[class *="pure-u"] p, [class *="pure-u"] li, [class *="pure-u"] figcaption {
     color: #3a3838;
 }
 
-[class *= 'pure-u'] a {
+[class *='pure-u'] a {
     color: #ff4b39;
     font-weight: 600;
 }
 
-
-
-[class *= 'pure-u'] a:hover {
+[class *='pure-u'] a:hover {
     color: #ef7b6f;
 }
-
 
 .imgCaption {
     font-size: .9em;
     color: #3a3838;
     line-height: 1em;
     padding-bottom: 1em;
-
 }
-/*
-Add transition to containers so they can push in and out.
-*/
-#layout,
-#menu,
-.menu-link {
-    -webkit-transition: all 0.2s ease-out;
-    -moz-transition: all 0.2s ease-out;
-    -ms-transition: all 0.2s ease-out;
-    -o-transition: all 0.2s ease-out;
-    transition: all 0.2s ease-out;
-}
-
-/*
-This is the parent `<div>` that contains the menu and the content area.
-*/
-#layout {
-    position: relative;
-    left: 0;
-    padding-left: 0;
-}
-    #layout.active #menu {
-        left: 150px;
-        width: 150px;
-    }
-
-    #layout.active .menu-link {
-        left: 150px;
-    }
 
 /* Stories table*/
 
@@ -144,15 +108,10 @@ This is the parent `<div>` that contains the menu and the content area.
     font-size: 1.4em;
 }
 
-
-
-
-
 .profile table tr {
     height: 2.3em;
     color: #3a3838;
 }
-   
 
 .profile table tr td:first-child {
     font-weight: bold;
@@ -168,20 +127,54 @@ This is the parent `<div>` that contains the menu and the content area.
     position: relative;
     font-family: 'Open Sans', sans-serif;
 }
+
 .area {
     stroke: #000;
     stroke-width: .1px;
 }
 
-
-
 #payMap .active {
-opacity: .5;
-stroke-width: .5px;
-} 
+    opacity: .5;
+    stroke-width: .5px;
+}
+
+/* THIS IS FROM THE PURE CSS TEMPLATE*/
+
+/*
+Add transition to containers so they can push in and out.
+*/
+
+#layout, #menu, .menu-link {
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -ms-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+}
+
+/*
+This is the parent `<div>` that contains the menu and the content area.
+*/
+
+#layout {
+    position: relative;
+    left: 0;
+    padding-left: 0;
+}
+
+#layout.active #menu {
+    left: 150px;
+    width: 150px;
+}
+
+#layout.active .menu-link {
+    left: 150px;
+}
+
 /*
 The content `<div>` is where all your content goes.
 */
+
 .content {
     margin: 0 auto;
     padding: 0 2em;
@@ -191,23 +184,25 @@ The content `<div>` is where all your content goes.
 }
 
 .header {
-     margin: 0;
-     color: #333;
-     text-align: center;
-     padding: 2.5em 2em 0;
-     border-bottom: 1px solid #eee;
- }
-    .header h1 {
-        margin: 0.2em 0;
-        font-size: 3em;
-        font-weight: 300;
-    }
-     .header h2 {
-        font-weight: 300;
-        color: #ccc;
-        padding: 0;
-        margin-top: 0;
-    }
+    margin: 0;
+    color: #333;
+    text-align: center;
+    padding: 2.5em 2em 0;
+    border-bottom: 1px solid #eee;
+}
+
+.header h1 {
+    margin: 0.2em 0;
+    font-size: 3em;
+    font-weight: 300;
+}
+
+.header h2 {
+    font-weight: 300;
+    color: #ccc;
+    padding: 0;
+    margin-top: 0;
+}
 
 .content-subhead {
     margin: 50px 0 20px 0;
@@ -215,103 +210,86 @@ The content `<div>` is where all your content goes.
     color: #888;
 }
 
-svg {
-    letter-spacing: initial;
-}
-
-
-.axisLabel {
-    font-family: 'Open Sans', Helvetica, sans-serif;
-    font-size: .8em;
-    padding-top: .1em;
-}
-
-
-#us_Chart,#us_Text,#cs_Chart,#cs_Text,#ts_Chart,#ts_Chart2,#ts_Text,#ts_Text2,#as_Chart,#as_Text {
-    display:none;
-    align-content: center;
-}
-
-
 /*
 The `#menu` `<div>` is the parent `<div>` that contains the `.pure-menu` that
 appears on the left side of the page.
 */
 
 #menu {
-    margin-left: -150px; /* "#menu" width */
+    margin-left: -150px;
+    /* "#menu" width */
     width: 150px;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
-    z-index: 1000; /* so the menu or its navicon stays above all content */
+    z-index: 1000;
+    /* so the menu or its navicon stays above all content */
     background: #191818;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
-    /*
+
+/*
     All anchors inside the menu should be styled like this.
     */
-    #menu a {
-        color: #999;
-        border: none;
-        padding: 0.6em 0 0.6em 0.6em;
-    }
 
-    /*
+#menu a {
+    color: #999;
+    border: none;
+    padding: 0.6em 0 0.6em 0.6em;
+}
+
+/*
     Remove all background/borders, since we are applying them to #menu.
     */
-     #menu .pure-menu,
-     #menu .pure-menu ul {
-        border: none;
-        background: transparent;
-    }
 
-    /*
+#menu .pure-menu, #menu .pure-menu ul {
+    border: none;
+    background: transparent;
+}
+
+/*
     Add that light border to separate items into groups.
     */
-    #menu .pure-menu ul,
-    #menu .pure-menu .menu-item-divided {
-        border-top: 1px solid #333;
-    }
-        /*
+
+#menu .pure-menu ul, #menu .pure-menu .menu-item-divided {
+    border-top: 1px solid #333;
+}
+
+/*
         Change color of the anchor links on hover/focus.
         */
-        #menu .pure-menu li a:hover,
-        #menu .pure-menu li a:focus {
-            background: #333;
-        }
 
-    /*
+#menu .pure-menu li a:hover, #menu .pure-menu li a:focus {
+    background: #333;
+}
+
+/*
     This styles the selected menu item `<li>`.
     */
-    #menu .pure-menu-selected,
-    #menu .pure-menu-heading {
-        background: #053961;
-    }
-        /*
+
+#menu .pure-menu-selected, #menu .pure-menu-heading {
+    background: #053961;
+}
+
+/*
         This styles a link within a selected menu item `<li>`.
         */
-        #menu .pure-menu-selected a {
-            color: #fff;
-        }
 
-    /*
+#menu .pure-menu-selected a {
+    color: #fff;
+}
+
+/*
     This styles the menu heading.
     */
-    #menu .pure-menu-heading {
-        font-size: 110%;
-        color: #fff;
-        margin: 0;
-    }
 
-
-    /* additional menu styling*/
-    a.sublink {
-        white-space: normal;
-        padding-right: .1em;
-    }
+#menu .pure-menu-heading {
+    font-size: 110%;
+    color: #fff;
+    margin: 0;
+}
 
 /* -- Dynamic Button For Responsive Menu -------------------------------------*/
 
@@ -324,77 +302,115 @@ how it works:
 `.menu-link` represents the responsive menu toggle that shows/hides on
 small screens.
 */
+
 .menu-link {
     position: fixed;
-    display: block; /* show this only on small screens */
+    display: block;
+    /* show this only on small screens */
     top: 0;
-    left: 0; /* "#menu width" */
+    left: 0;
+    /* "#menu width" */
     background: #000;
-    background: rgba(0,0,0,0.7);
-    font-size: 10px; /* change this value to increase/decrease button size */
+    background: rgba(0, 0, 0, 0.7);
+    font-size: 10px;
+    /* change this value to increase/decrease button size */
     z-index: 10;
     width: 2em;
     height: auto;
     padding: 2.1em 1.6em;
 }
 
-    .menu-link:hover,
-    .menu-link:focus {
-        background: #000;
-    }
+.menu-link:hover, .menu-link:focus {
+    background: #000;
+}
 
-    .menu-link span {
-        position: relative;
-        display: block;
-    }
+.menu-link span {
+    position: relative;
+    display: block;
+}
 
-    .menu-link span,
-    .menu-link span:before,
-    .menu-link span:after {
-        background-color: #fff;
-        width: 100%;
-        height: 0.2em;
-    }
+.menu-link span, .menu-link span:before, .menu-link span:after {
+    background-color: #fff;
+    width: 100%;
+    height: 0.2em;
+}
 
-        .menu-link span:before,
-        .menu-link span:after {
-            position: absolute;
-            margin-top: -0.6em;
-            content: " ";
-        }
+.menu-link span:before, .menu-link span:after {
+    position: absolute;
+    margin-top: -0.6em;
+    content: " ";
+}
 
-        .menu-link span:after {
-            margin-top: 0.6em;
-        }
+.menu-link span:after {
+    margin-top: 0.6em;
+}
 
+/* PURE CSS TEMPLATE ENDS HERE*/
+
+svg {
+    letter-spacing: initial;
+}
+
+h3.plotTitle {
+    margin-bottom: .3em;
+}
+
+p.subtitle {
+    font-size: .9em;
+    line-height: initial;
+    padding-top: 0;
+    font-style: italic;
+    margin-top: 0;
+}
+
+.axis text {
+    font-family: 'Open Sans', Helvetica, sans-serif;
+}
+
+.axisLabel {
+    font-family: 'Open Sans', Helvetica, sans-serif;
+    font-size: .8em;
+    padding-top: .1em;
+}
+
+#us_Chart, #us_Text, #cs_Chart, #cs_Text, #ts_Chart, #ts_Chart2, #ts_Text, #ts_Text2, #as_Chart, #as_Text {
+    display: none;
+    align-content: center;
+}
+
+/* additional menu styling*/
+
+a.sublink {
+    white-space: normal;
+    padding-right: .1em;
+}
+
+/* the following are also from the template*/
 
 /* -- Responsive Styles (Media Queries) ------------------------------------- */
 
 /*
 Hides the menu at `48em`, but modify this based on your app's needs.
 */
-@media (min-width: 48em) {
 
-    .header,
-    .content {
+@media (min-width: 48em) {
+    .header, .content {
         padding-left: 2em;
         padding-right: 2em;
     }
-
     #layout {
-        padding-left: 150px; /* left col width "#menu" */
+        padding-left: 150px;
+        /* left col width "#menu" */
         left: 0;
     }
     #menu {
         left: 150px;
     }
-
     .menu-link {
         position: fixed;
         left: 150px;
         display: none;
     }
-
     #layout.active .menu-link {
         left: 150px;
     }

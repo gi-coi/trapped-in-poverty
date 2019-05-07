@@ -29,7 +29,7 @@
 
     var xScale = d3.scaleLinear().rangeRound([0, width]);
 
-    var colours = d3.scaleOrdinal(d3.schemeCategory10);
+
 
     var fills = d3.scaleOrdinal()
     .range(['#882D60', '#7A9F35']);
@@ -56,6 +56,16 @@
         .attr('class', 'y axis')
         .call(d3.axisLeft(yScale));
 
+        d3.select('#stackedBar')
+.append('p')
+.attr('class', 'source')
+.html('Source: Department of Work and Pensions, ')
+.append('a')
+.attr('href', 'https://www.gov.uk/government/collections/households-below-average-income-hbai--2')
+.attr('target', '_blank')
+.text('HBAI');
+
+
 
         svg.append("text")             
         .attr("transform",
@@ -77,8 +87,8 @@
 
 
 
-        document.getElementById("housing_costs").addEventListener("change", function () {
-         
+        document.getElementById("housing_costs_bar").addEventListener("change", function () {
+        
             return update(data);
         });
     }
@@ -121,20 +131,29 @@
 
 
     var groups = svg.selectAll('.group')
-    .data(stacked, function (d) { return d})
+    .data(stacked, function (d, i) { return d[i].data.housing_costs})
+   
+    
+
+
+    var new_groups = groups
     .enter()
     .append('g')
-    .attr('class', 'group')
+    .attr('class', 'group');
+
+    new_groups.merge(groups)
     .attr('fill', function (d) {
  
         return fills(d.key)
-    })
+    });
 
-groups.selectAll('.legendText').remove();
+    groups.exit().remove();
+
+new_groups.selectAll('.legendText').remove();
     
-  var rects=  groups
+  var rects=  new_groups
     .selectAll('.bar')
-    .data(function (d) {return d});
+    .data(function (d) { return d});
 
 
 var new_rects = rects
@@ -147,7 +166,7 @@ var new_rects = rects
     .attr('y', function (d) { return yScale(d.data.year)})
     .attr('width', function (d) { return xScale(d[1] - d[0]) })
     .attr('height', yScale.bandwidth())
-    .on("mouseover", function(d) {    
+    .on("mouseenter", function(d) {    
   
         tooltip.transition()        
             .duration(200)      
@@ -165,35 +184,34 @@ var new_rects = rects
     });
     
  rects.exit().remove();
+
+
+
+ groups.selectAll('.legendText').remove();
  
- 
-groups
-.append('text')
+ var labs = groups
+ .append('text')
+ .datum(function (d) {
+    return {
+        text: d.key,
+        xPos: d[d.length - 1][0],
+        yPos: d[d.length - 1].data.year
+    }
+ })
+
 .attr('class', 'legendText')
-.datum(function (d) {
-   return {
-       text: d.key,
-       xPos: d[d.length - 1][0],
-       yPos: d[d.length - 1].data.year
-   }
-})
 .text(function (d) {
 
     return d.text
 })
 .attr('x', function (d) { return xScale(d.xPos + 3)})
 .attr('dy', function(d) {return yScale(d.yPos) - 4} )
-.style('font', '16px courier')
+.style('font', '16px sans-serif');
+
+
+labs.exit().remove();
 
 // caption for data source
-d3.select('#stackedBar')
-.append('p')
-.attr('class', 'source')
-.html('Source: Department of Work and Pensions, ')
-.append('a')
-.attr('href', 'https://www.gov.uk/government/collections/households-below-average-income-hbai--2')
-.attr('target', '_blank')
-.text('HBAI');
 
 
 
@@ -205,7 +223,7 @@ d3.select('#stackedBar')
 
 
     var filterData = function (data) {
-var HCselector = document.getElementById("housing_costs");
+var HCselector = document.getElementById("housing_costs_bar");
 var housing_costs = HCselector.options[HCselector.selectedIndex].value;
 
 var filteredData = data.filter(function (d) {

@@ -77,6 +77,7 @@
 
             <div class="content">
                 <div class='pure-u-3-3 interlude'>
+                  
                     <h2 class="content-subhead">Poverty in UK and Wales</h2>
                     <p>
                         Many people living in Wales are caught in poverty. They need to spend most of their time to
@@ -105,7 +106,7 @@
                         </ul>
 
                     </p>
-                    <p>
+         <!--            <p>
                         The Joseph Rowntree Foundation’s report "UK poverty: Causes, costs and solutions" (2016)
                         identified
                         five factors that contribute to poverty:
@@ -121,10 +122,9 @@
                         The compounded effects of these issues tend to create a poverty cycle, due to which more
                         vulnerable individuals will face significant challenges to find a job, secure housing, or access
                         training or education.
-                    </p>
-                    <p>Use the menu on the left to investigate a specific topic. For the key facts and figures on
-                        poverty in Wales and the UK, read below.</p>
-                    <p></p>
+                    </p> -->
+                    <p>In this section, you will find some facts and figures and our analysis on poverty in the UK and Wales. </p>
+                   
 
                 </div>
                 <div class='pure-u-3-3 interlude'>
@@ -202,8 +202,24 @@
 
                     </div> -->
                 <div class='pure-u-3-3'>
+                    <h3 class='plotTitle'>One in five children is still at risk of poverty in Wales</h3>
+                    <p class='subtitle'>(% of total households)</p> 
 
-
+                    <div class='filter pure-u-3-3'>
+                            <select id="housing_costs_child" class="pure-input-1-4">
+                                <option value="Before Housing Costs">Before Housing Costs</option>
+                                <option value="After Housing Costs">After Housing Costs</option>
+                            </select>
+    
+                            <select id="poverty_type_child" class='styled-select'>
+                                <option value="Absolute poverty">Absolute poverty</option>
+                                <option value="Relative poverty">Relative poverty</option>
+                            </select>
+    
+    
+    
+    
+                        </div>
                     <div id='childVis' class='visDiv'>
 
 
@@ -217,7 +233,8 @@
                         work.</p>
                 </div>
                 <div class='pure-u-3-3'>
-                    <h3>Child poverty in Wales, by group</h3>
+                    <h3 class='plotTitle'>Child poverty in Wales, by group</h3>
+                    <p class='subtitle'>Use the dropdown menu to explore each group in detail</p>
                     <div class='filter pure-u-3-3' id=householdFilter>
 
 
@@ -240,7 +257,18 @@
 
 
                 <div class='pure-u-3-3'>
-                    <h3>In-work poverty affecting Welsh children</h3>
+                    <h3 class='plotTitle'>In-work poverty affecting Welsh children</h3>
+                    <p class='subtitle'>Two thirds of children in relative poverty live in a household where at least one adult is in work</p>
+                    <div class='filter pure-u-3-3'>
+                            <select id="housing_costs_bar" class="pure-input-1-4">
+                                <option value="Before Housing Costs">Before Housing Costs</option>
+                                <option value="After Housing Costs">After Housing Costs</option>
+                            </select>
+    
+                           
+    
+    
+                        </div>
                     <div id='stackedBar'>
 
                     </div>
