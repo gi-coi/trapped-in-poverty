@@ -31,7 +31,9 @@
             [width - margin.left, height - margin.top]
         ])
 
-
+// COLOUR SCALE
+// First colour is blue, second is red. Use these ase base colours
+// colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/
     var fills = d3.scaleOrdinal().range(['#27647b','#ca3542', '#aecbc9', '#b49fad',  '#57575f']);
 
     // axis scales
@@ -118,12 +120,6 @@
 
 
 
-
-    // SCALES
-
-    // colour scale
-    var colours = d3.scaleOrdinal()
-    .range(['#882D60', '#7A9F35']);
 
 
 
