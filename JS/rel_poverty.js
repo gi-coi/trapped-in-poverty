@@ -35,9 +35,10 @@
 
  // SCALES
 
- // colour scale
- var colours = d3.scaleOrdinal()
- .range(['#882D60', '#7A9F35']);
+// COLOUR SCALE
+// First colour is blue, second is red. Use these ase base colours
+// colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/
+var fills = d3.scaleOrdinal().range(['#27647b','#ca3542', '#aecbc9', '#b49fad',  '#57575f']);
 
  // axis scales
  var xScale = d3.scaleBand().rangeRound([0, width - margin.left - margin.right]);
@@ -229,7 +230,7 @@ focus.append("text")
             return d.region
         })
         .attr('stroke', function (d) {
-            return colours(d.region)
+            return fills(d.region)
         })
 
 
@@ -273,7 +274,7 @@ marker.exit().remove();
             return lineGen(d.value.leaves);
         })
         .attr('stroke', function (d) {
-            return colours(d.key)
+            return fills(d.key)
         })
         .attr('stroke-width', '3px')
         .attr('fill', 'none');
