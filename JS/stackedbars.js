@@ -30,9 +30,7 @@
     var xScale = d3.scaleLinear().rangeRound([0, width]);
 
 
-
-    var fills = d3.scaleOrdinal()
-    .range(['#882D60', '#7A9F35']);
+    var fills = d3.scaleOrdinal().range(['#ca3542', '#27647b']);
 
 
     d3.csv('csv/cp_households_cat.csv', 
@@ -187,9 +185,8 @@ var new_rects = rects
 
 
 
- groups.selectAll('.legendText').remove();
  
- var labs = groups
+ var labs = new_groups
  .append('text')
  .datum(function (d) {
     return {
@@ -209,7 +206,7 @@ var new_rects = rects
 .style('font', '16px sans-serif');
 
 
-labs.exit().remove();
+
 
 // caption for data source
 

@@ -32,7 +32,7 @@
         ])
 
 
-    var fills = d3.scaleOrdinal().range(['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0']);
+    var fills = d3.scaleOrdinal().range(['#27647b','#ca3542', '#aecbc9', '#b49fad',  '#57575f']);
 
     // axis scales
     var xScale = d3.scaleBand().rangeRound([0, width - margin.left - margin.right]).padding(0.3);
@@ -371,7 +371,7 @@
             })
             .attr('stroke', function (d) {
 
-                return colours(d.region)
+                return fills(d.region)
             })
 
 
@@ -416,7 +416,7 @@
                 return lineGen(d.value.leaves);
             })
             .attr('stroke', function (d) {
-                return colours(d.key)
+                return fills(d.key)
             })
             .attr('stroke-width', '3px')
             .attr('fill', 'none');
