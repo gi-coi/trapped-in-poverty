@@ -31,10 +31,6 @@
         ])
  
  
-            
-
- // SCALES
-
 // COLOUR SCALE
 // First colour is blue, second is red. Use these ase base colours
 // colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/
