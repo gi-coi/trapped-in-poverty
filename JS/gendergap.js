@@ -41,9 +41,10 @@
       .domain(data.Issue);
 
     const y = d3.scaleLinear().range([chartHeight, 0]).domain([0, 100]);
+    // adjusted colours with the charts in the 'data' page. (colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/)
     const z = d3
       .scaleOrdinal()
-      .range(['#809ead', '#b1c0c9', '#d7d6cb', '#e8e5c5'])
+      .range(['#27647b','#ca3542', '#aecbc9', '#b49fad'])
       .domain(answers);
 
     const stack = d3.stack().keys(answers)(transformedData);
