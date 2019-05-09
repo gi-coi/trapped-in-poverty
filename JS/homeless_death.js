@@ -70,7 +70,7 @@
             .entries(data);
 
         // set the colour scale and legend space
-        var colour = d3.scaleOrdinal(d3.schemeCategory10);
+        var colour = d3.scaleOrdinal.range(['#27647b','#ca3542']);
         legendSpace = width / dataNest.length;
 
         // loop through each key
