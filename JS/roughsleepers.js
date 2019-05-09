@@ -54,7 +54,9 @@
                     .attr("y", function(d) { return yScale(d.numbers); })
                     .attr("x", function(d) { return xScale(d.cities); })
                     .attr("width", xScale.bandwidth())
-                    .style("fill", function(d,i) {return 'rgb(20, 20, '+ ((i*30) +100) + ')' });
+                    // adjusted colour with the charts of the 'data' page. (colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/)
+                    .style("fill", "#27647b");
+                    //.style("fill", function(d,i) {return 'rgb(20, 20, '+ ((i*30) +100) + ')' });
                 
                 // label the bars
                 svg.selectAll('text')
