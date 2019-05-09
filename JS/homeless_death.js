@@ -68,11 +68,10 @@
         var dataNest = d3.nest()
             .key(function (d) { return d.case; })
             .entries(data);
-
+        
         // set the colour scale and legend space
-        // adjusted colour with the charts in the 'data' page. (colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/)
-        var colour = d3.scaleOrdinal.(d3.schemeCategory20b);
-        legendSpace = width / dataNest.length;
+	        var colour = d3.scaleOrdinal(d3.schemeCategory10);
+	        legendSpace = width / dataNest.length;
 
         // loop through each key
         var lines = svg.selectAll('.line')
