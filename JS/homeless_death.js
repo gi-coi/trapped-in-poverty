@@ -71,7 +71,7 @@
 
         // set the colour scale and legend space
         // adjusted colour with the charts in the 'data' page. (colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/)
-        var colour = d3.scaleOrdinal.range(['#27647b','#ca3542']);
+        var colour = d3.scaleOrdinal.(d3.schemeCategory10);
         legendSpace = width / dataNest.length;
 
         // loop through each key
