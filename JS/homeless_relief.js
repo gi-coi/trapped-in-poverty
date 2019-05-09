@@ -49,23 +49,19 @@
                     .data(data)
                     .enter()
                     .append('rect')
-                    //.transition().duration(300) 
-                    //.delay(function(d,i) {return i*200; })
                     .attr("height", function(d) { return height - yScale(d.percentage); })
                     .attr("y", function(d) { return yScale(d.percentage); })
                     .attr("x", function(d) { return xScale(d.cities); })
                     .attr("width", xScale.bandwidth())
-                    //.style("fill", function(d,i) {return 'rgb(20, 20, '+ ((i*30) +100) + ')' })
-                    .attr("fill", function(d,i) {
-					   return 'rgb(20, 20, '+ ((i*30) +100) + ')';
-			        })
+		    //// adjusted colour with the charts of the 'data' page. (colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/)
+                    .attr("fill", "#27647b")
                     .on("mouseover", function() {
                         d3.select(this)
-                            .attr("fill", "orange");
+                            .attr("fill", "#ca3542");
                     })
                     .on("mouseout", function() {
                         d3.select(this)
-                            .attr("fill", function(d,i) {return 'rgb(20, 20, '+ ((i*30) +100) + ')' });
+                            .attr("fill", "#27647b");
                     });
                 
                 // label the bars
