@@ -1,3 +1,7 @@
+// map for weekly full-time earnings in Great Britain
+// Data for UK unavailable
+
+
 var width;
 var height;
 var svg;
@@ -138,6 +142,7 @@ var new_areas= areas
                 // console.log(d)
                 if (d.properties.pay_week == 0) {
                     // null values
+                    // otherwise they are forced to 0
                     d.properties.pay_week = 'No data';
                     return '#B0B0B0';
                 } else {
@@ -150,7 +155,7 @@ var new_areas= areas
                 .attr("id", function (d) {  return d.id; })
                 .attr("d", path)
                 .on('mouseenter', function (d) {
-                    
+                    // tooltip on map
                     tooltip.transition()        
             .duration(100)      
             .style("opacity", .9) 
@@ -252,7 +257,7 @@ legend.append('g').attr('transform', 'translate(0,' + 30 + ')').attr('class', 'x
 function clicked(d) {
 
     // handles zoom
-   
+   // Bostock block
  var x, y, k;
  if (d && centered !== d) {
     var centroid = path.centroid(d);
@@ -278,7 +283,7 @@ function clicked(d) {
 }
 
 
-
+// 
 
         var init = function () {
    width = document.getElementById('payMap').clientWidth;
@@ -302,9 +307,7 @@ function clicked(d) {
                 .rotate([0, 0]);
 
 
-            var proj = d3.geoTransverseMercator();
-            path = d3.geoPath()
-               .projection(projection);
+        
 
 d3.queue()
 .defer(d3.json, "map/uk.json")

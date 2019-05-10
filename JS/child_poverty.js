@@ -1,5 +1,11 @@
 (function () {
 
+
+
+    // FIRST CHART
+    // line chart for relative/absolute child poverty BHC/AHC
+
+
     // basic dimensions
     var width = 850;
     var height = 600;
@@ -31,10 +37,10 @@
             [width - margin.left, height - margin.top]
         ])
 
-// COLOUR SCALE
-// First colour is blue, second is red. Use these ase base colours
-// colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/
-    var fills = d3.scaleOrdinal().range(['#27647b','#ca3542', '#aecbc9', '#b49fad',  '#57575f']);
+    // COLOUR SCALE
+    // First colour is blue, second is red. Use these ase base colours
+    // colourblind-friendly https://venngage.com/blog/color-blind-friendly-palette/
+    var fills = d3.scaleOrdinal().range(['#27647b', '#ca3542', '#aecbc9', '#b49fad', '#57575f']);
 
     // axis scales
     var xScale = d3.scaleBand().rangeRound([0, width - margin.left - margin.right]).padding(0.3);
@@ -68,6 +74,7 @@
 
 
     // SECOND CHART
+    // line chart for poverty by group in Wales
     var h_line = d3.line()
         .curve(d3.curveMonotoneX)
         .x(function (d) { return xScaleW(d.year) })
@@ -125,6 +132,7 @@
 
 
     d3.csv(
+        // POVERTY UK-WALES
         'csv/child_poverty_total.csv',
         function (d) {
             d.value = +d.value;
@@ -144,28 +152,28 @@
             svg.append("g")
                 .attr("class", "y axis")
                 .call(d3.axisLeft(yScale));
-// axis labels
+            // axis labels
 
-                svg.append("text")             
+            svg.append("text")
                 .attr("transform",
-                      "translate(" + (width / 2 - margin.left) + " ," + 
-                                     (height - margin.bottom + 3) + ")")
+                    "translate(" + (width / 2 - margin.left) + " ," +
+                    (height - margin.bottom + 3) + ")")
                 .style("text-anchor", "middle")
                 .attr('class', 'x axisLabel')
                 .text("Year");
-   
-   
-                svg.append("text")
+
+
+            svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - margin.left)
-                .attr("x",0 - (height / 2))
+                .attr("x", 0 - (height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .attr('class', 'y axisLabel')
                 .text("% of households");
 
-// caption for data source
-                d3.select('#childVis')
+            // caption for data source
+            d3.select('#childVis')
                 .append('p')
                 .attr('class', 'source')
                 .html('Source: Department of Work and Pensions, ')
@@ -193,7 +201,7 @@
     );
 
 
-// data on child poverty in Welsh households
+    // data on child poverty in Welsh households
     d3.csv(
         'csv/cp_households_wales.csv',
         function (d) {
@@ -218,19 +226,19 @@
                 .call(d3.axisLeft(yScaleW));
 
 
-                svg2.append("text")             
+            svg2.append("text")
                 .attr("transform",
-                      "translate(" + (width / 2 - margin.left) + " ," + 
-                                     (height - margin.bottom + 3) + ")")
+                    "translate(" + (width / 2 - margin.left) + " ," +
+                    (height - margin.bottom + 3) + ")")
                 .style("text-anchor", "middle")
                 .attr('class', 'x axisLabel')
                 .text("Year");
-   
-   
-                svg2.append("text")
+
+
+            svg2.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - margin.left)
-                .attr("x",0 - (height / 2))
+                .attr("x", 0 - (height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
                 .attr('class', 'y axisLabel')
@@ -240,7 +248,7 @@
 
 
 
-                d3.select('#childWales')
+            d3.select('#childWales')
                 .append('p')
                 .attr('class', 'source')
                 .html('Source: ')
@@ -250,8 +258,8 @@
                 .text('StatsWales');
 
 
-
-            var resetButton = d3.select('#householdFilter')
+            // RESET BUTTON - go back to line chart
+            d3.select('#householdFilter')
                 .append('button')
                 .attr('id', 'resetButton')
                 .attr('class', 'styled-button')
@@ -260,6 +268,7 @@
 
 
             document.getElementById('resetButton').addEventListener('click', function () {
+
                 document.getElementById('catSelector').value = 'All households';
                 householdsChart(data);
             })
@@ -267,7 +276,7 @@
 
             document.getElementById('catSelector').addEventListener('change', function () {
                 var cat = this[this.selectedIndex].value;
-
+                // bar chart with single group (clearer view of data without comparisons)
                 toBar(cat, data);
 
 
@@ -276,7 +285,7 @@
         }
     )
 
-
+    // for first line chart
     var update = function (data) {
 
 
@@ -315,10 +324,10 @@
             })
             .entries(filteredData);
 
-// if overlapping labels
+        // if overlapping labels
         relax(nested);
 
-            console.log(nested)
+        console.log(nested)
         var group = svg.selectAll('.lineGroup')
             .data(nested, function (d) {
 
@@ -385,7 +394,7 @@
 
         new_marker.merge(marker)
             .attr("x1", function (d) {
-               
+
                 return xScale(d.value.labelX);
             })
             .attr("y1", function (d) {
@@ -416,10 +425,6 @@
             })
             .attr('stroke-width', '3px')
             .attr('fill', 'none');
-
-
-
-
 
 
 

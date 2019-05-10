@@ -1,5 +1,6 @@
 
 (function ()   {
+    // stacked bar chart - children in workless vs. working households, from 96-97
    
     // tooltip
     var tooltip = d3.select("body").append("div")   
@@ -86,7 +87,7 @@
 
 
         document.getElementById("housing_costs_bar").addEventListener("change", function () {
-        
+        // when housing costs are updated
             return update(data);
         });
     }
@@ -185,8 +186,8 @@ var new_rects = rects
 
 
 
- 
- var labs = new_groups
+ // labels on bars on top, instead of separate legend
+ new_groups
  .append('text')
  .datum(function (d) {
     return {
@@ -206,9 +207,6 @@ var new_rects = rects
 .style('font', '16px sans-serif');
 
 
-
-
-// caption for data source
 
 
 

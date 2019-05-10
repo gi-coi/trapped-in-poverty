@@ -1,5 +1,10 @@
 // code base for tooltip and line labels: https://bl.ocks.org/martinjc/980a2fcdbf0653c301dc2fb52750b0d9
-(function  () { // basic dimensions
+(function  () { 
+    
+    // timeline for poverty in UK-WALES
+    //absolute-relative poverty, before-after housing costs
+    
+    // basic dimensions
  var width = 850;
  var height = 600;
  var margin = { top: 30, right: 100, bottom: 50, left: 40 };
@@ -50,7 +55,6 @@ var fills = d3.scaleOrdinal().range(['#27647b','#ca3542', '#aecbc9', '#b49fad', 
      
      
 
- // linegroups is just a group to hold the lines, it never needs to change, so lets declare it here
 
 
  var focus = svg.append("g")
@@ -72,11 +76,9 @@ focus.append("text")
          return d;
      },
      function(poverty_data) {
-         // better to write one function that can draw the lines when its passed data
-         // than to write one bit of code that draws things the first time,
-         // then another that handles all the subsequent drawing.
-         // That way you only have to get one bit of code right, not two
+     
          var filteredData = filterData(poverty_data);
+         // first call of line chart
         update(filteredData);
 
          svg.append("g")
@@ -132,6 +134,7 @@ focus.append("text")
 
 
          document.getElementById('poverty_type').addEventListener('change', function () {
+             // filter based on absolute-relative poverty
             var filteredData = filterData(poverty_data);
             return update(filteredData);
         })
