@@ -27,7 +27,7 @@ var path;
 
 var pay_data;
 
-
+var geodude;
 var zoom = d3.zoom()
 .on('zoom', zoomFunc);
 
@@ -114,7 +114,7 @@ deciles.push(800) */
 
 colours.domain([min, max]);
 
-
+console.log(geo_data);
 
     var b = path.bounds(topojson.feature(geo_data, geo_data.objects['lad']));
             var s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
@@ -123,6 +123,7 @@ colours.domain([min, max]);
                 .scale(s)
                 .translate(t);
 
+                console.log(b);
 // merge and exit patterns aren't currently necessary but might be if I add features
 
             var areas = g.selectAll(".area")
@@ -307,7 +308,8 @@ function clicked(d) {
                 .rotate([0, 0]);
 
 
-        
+                path = d3.geoPath()
+                .projection(projection);
 
 d3.queue()
 .defer(d3.json, "map/uk.json")
@@ -317,7 +319,9 @@ d3.queue()
 
     pay_data = p_data;
 
+
    
+
 
     draw(boundary_data);
 

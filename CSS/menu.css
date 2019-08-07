@@ -30,6 +30,10 @@ div.tooltip {
     pointer-events: none;
 }
 
+
+.focus circle {
+    z-index: 1;
+}
 /*Profile page*/
 
 section.profile {
@@ -129,13 +133,13 @@ p.source {
 }
 
 .area {
-    stroke: #000;
+    stroke: #797979;
     stroke-width: .1px;
 }
 
 #payMap .active {
     opacity: .5;
-    stroke-width: .5px;
+    stroke-width: .3px;
 }
 
 /* THIS IS FROM THE PURE CSS TEMPLATE*/
